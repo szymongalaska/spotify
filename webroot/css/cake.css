@@ -300,11 +300,6 @@ input[type='color'] {
     }
 }
 
-body#home-page h3
-{
-    text-align: center;
-}
-
 body#home-page .button
 {
     font-size: 1.5rem;

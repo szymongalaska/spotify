@@ -25,18 +25,25 @@ $this->disableAutoLayout();
 <body id="home-page">
     <header>
         <div class="container text-center">
-            <a href="https://cakephp.org/" target="_blank" rel="noopener">
-                <img alt="CakePHP" src="https://cakephp.org/v2/img/logos/CakePHP_Logo.svg" width="350" />
-            </a>
+                <img alt="CakePHP" src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Full_Logo_RGB_Green.png" width="350" />
             <h1>
             </h1>
         </div>
     </header>
     <main class="main">
-        <div class="container">
+        <div class="container text-center" style="margin-bottom: 2rem;">
             <div class="content">
                 <div class="row">
                     <div class="column">
+                        <p>Aplikacja pozwoli ci na sprawdzenie swoich statystyk oraz zarządzanie profilem Spotify.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="content">
+                <div class="row">
+                    <div class="column text-center">
                         <h3><?= __('Login to continue') ?></h3>
                     </div>
                 </div>
