@@ -22,7 +22,7 @@ $this->disableAutoLayout();
     <?= $this->fetch('script') ?>
 </head>
 
-<body>
+<body id="home-page">
     <header>
         <div class="container text-center">
             <a href="https://cakephp.org/" target="_blank" rel="noopener">
@@ -41,7 +41,7 @@ $this->disableAutoLayout();
                     </div>
                 </div>
                 <div class="row">
-                    <div class="column">
+                    <div class="column" style="display: flex; justify-content: center; align-items: center;">
                         <?= $this->Html->link(__('Login'), ['controller' => 'spotify', 'action' => 'login'], ['class' => 'button']) ?>
                     </div>
                 </div>
