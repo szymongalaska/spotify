@@ -24,6 +24,8 @@ use Cake\Validation\Validator;
  * @method iterable<\App\Model\Entity\User>|\Cake\Datasource\ResultSetInterface<\App\Model\Entity\User> saveManyOrFail(iterable $entities, array $options = [])
  * @method iterable<\App\Model\Entity\User>|\Cake\Datasource\ResultSetInterface<\App\Model\Entity\User>|false deleteMany(iterable $entities, array $options = [])
  * @method iterable<\App\Model\Entity\User>|\Cake\Datasource\ResultSetInterface<\App\Model\Entity\User> deleteManyOrFail(iterable $entities, array $options = [])
+ *
+ * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class UsersTable extends Table
 {
@@ -40,6 +42,8 @@ class UsersTable extends Table
         $this->setTable('users');
         $this->setDisplayField('display_name');
         $this->setPrimaryKey('id');
+
+        $this->addBehavior('Timestamp');
     }
 
     /**
@@ -65,6 +69,16 @@ class UsersTable extends Table
             ->scalar('image_url')
             ->maxLength('image_url', 255)
             ->allowEmptyString('image_url');
+
+        $validator
+            ->scalar('access_token')
+            ->maxLength('access_token', 500)
+            ->allowEmptyString('access_token');
+
+        $validator
+            ->scalar('refresh_token')
+            ->maxLength('refresh_token', 500)
+            ->allowEmptyString('refresh_token');
 
         return $validator;
     }

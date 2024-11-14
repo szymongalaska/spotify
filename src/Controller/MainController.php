@@ -21,11 +21,15 @@ class MainController extends AppController
      */
     public function login()
     {
+        // Already logged in
+        if($this->getRequest()->getSession()->read('user.id'))
+            return $this->redirect(['action' => 'dashboard']);
+
         // Approval
         if ($this->request->getQuery('code')) 
         {
             $this->getApi()->requestAccessToken($this->getRequest()->getQuery('code'));
-            $this->saveUser($this->getApi()->getAccessToken(), $this->getApi()->getRefreshToken());
+            $this->_setUser($this->getApi()->getAccessToken(), $this->getApi()->getRefreshToken());
             
 
             return $this->redirect(['action' => 'dashboard']);
@@ -52,8 +56,51 @@ class MainController extends AppController
         return $this->_api;
     }
 
-    private function saveUser(string $accessToken, string $refreshToken)
+    /**
+     * Sets user data to session
+     * 
+     * @param string $accessToken Access Token acquired from Spotify API
+     * @param string $refreshToken Refresh Token acquired from Spotify API
+     * 
+     * @return bool|\Cake\Http\Response|null
+     */
+    private function _setUser(string $accessToken, string $refreshToken)
     {
-        dd($this->getApi()->getProfile());
+        $profile = $this->getApi()->getProfile();
+        $user = $this->fetchTable('Users')->findBySpotifyId($profile['id'])->first() ?? $this->_saveUser($profile, $accessToken, $refreshToken);
+        
+        if($user === false)
+        {
+            $this->Flash->error(__('There was an error during saving your data.'));
+            return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
+        }
+
+        $this->getRequest()->getSession()->write('user', $user);
+
+        return true;
     }
+
+    /**
+     * Saves user in database. Returns user or false if failed
+     * 
+     * @param array $profile Profile data from Spotify API
+     * @param string $access_token Access Token acquired from Spotify API
+     * @param string $refresh_token Referesh Token acquired from Spotify API
+     * 
+     * @return bool|\Cake\Datasource\EntityInterface
+     */
+    private function _saveUser(array $profile, string $access_token, string $refresh_token)
+    {
+        $user = $this->fetchTable('Users')->newEntity([
+            'spotify_id' => $profile['id'],
+            'display_name' => $profile['display_name'] ?? null,
+            'image_url' => $profile['images'][0]['url'] ?? null,
+            'access_token' => $access_token,
+            'refresh_token' => $refresh_token
+        ]);
+        
+        return $this->fetchTable('Users')->save($user);
+    }
+    
+
 }

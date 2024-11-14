@@ -12,6 +12,10 @@ use Cake\ORM\Entity;
  * @property int $spotify_id
  * @property string $display_name
  * @property string|null $image_url
+ * @property string|null $access_token
+ * @property string|null $refresh_token
+ * @property \Cake\I18n\DateTime $created
+ * @property \Cake\I18n\DateTime $modified
  */
 class User extends Entity
 {
@@ -28,5 +32,9 @@ class User extends Entity
         'spotify_id' => true,
         'display_name' => true,
         'image_url' => true,
+        'access_token' => true,
+        'refresh_token' => true,
+        'created' => true,
+        'modified' => true,
     ];
 }

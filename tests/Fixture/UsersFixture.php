@@ -23,6 +23,10 @@ class UsersFixture extends TestFixture
                 'spotify_id' => 1,
                 'display_name' => 'Lorem ipsum dolor sit amet',
                 'image_url' => 'Lorem ipsum dolor sit amet',
+                'access_token' => 'Lorem ipsum dolor sit amet',
+                'refresh_token' => 'Lorem ipsum dolor sit amet',
+                'created' => 1731590444,
+                'modified' => 1731590444,
             ],
         ];
         parent::init();
