@@ -102,5 +102,13 @@ class MainController extends AppController
         return $this->fetchTable('Users')->save($user);
     }
     
-
+    /**
+     * Render dashboard
+     * 
+     * @return void
+     */
+    public function dashboard()
+    {
+        $this->set('user', $this->getRequest()->getSession()->read('user'));
+    }
 }

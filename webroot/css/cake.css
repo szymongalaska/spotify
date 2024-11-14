@@ -117,10 +117,10 @@ th {
 .top-nav {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    max-width: 112rem;
+    justify-content: flex-end;
     padding: 2rem;
     margin: 0 auto;
+    box-shadow: -3px 2px 4px 0px #d3d3d3;
 }
 .top-nav-title a {
     font-size: 2.4rem;
@@ -316,4 +316,31 @@ body#home-page a:hover
 body#home-page .content
 {
     padding: 7rem;
+}
+
+main
+{
+    margin-top: 5%;
+}
+
+img.top-nav-profile-picture
+{
+    width: 64px;
+    height: 64px;
+    border: 1px solid #c1c1c1;
+    border-radius: 100%;
+    padding: 0.5rem;
+}
+
+.top-nav-user
+{
+    display:flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.top-nav-user span
+{
+    font-weight: bold;
+    
 }

@@ -100,6 +100,11 @@ class SpotifyApi
         return false;
     }
 
+    /**
+     * Get JSON of user profile
+     * 
+     * @return array
+     */
     public function getProfile()
     {
         return $this->getRequest('/v1/me')->getJson();

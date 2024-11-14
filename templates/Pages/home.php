@@ -21,10 +21,13 @@ $this->disableAutoLayout();
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 </head>
+
 <body id="home-page">
     <header>
         <div class="container text-center">
-                <img alt="CakePHP" src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Full_Logo_RGB_Green.png" width="350" />
+            <img alt="CakePHP"
+                src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Full_Logo_RGB_Green.png"
+                width="350" />
             <h1>
             </h1>
         </div>
@@ -40,7 +43,7 @@ $this->disableAutoLayout();
             </div>
         </div>
         <div class="container">
-        <?= $this->Flash->render() ?>
+            <?= $this->Flash->render() ?>
             <div class="content">
                 <div class="row">
                     <div class="column text-center">
