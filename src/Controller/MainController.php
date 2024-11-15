@@ -31,6 +31,9 @@ class MainController extends AppController
                 $this->getApi()->setTokensOfUser($this->getRequest()->getSession()->read('user')->access_token, $this->getRequest()->getSession()->read('user')->refresh_token);
 
         }
+
+        if($this->getRequest()->getSession()->check('user'))
+            $this->set('current_song', $this->getApi()->getCurrentlyPlaying());
     }
     /**
      * Request authorization from the user and redirect to corresponding page
@@ -61,7 +64,7 @@ class MainController extends AppController
         }
 
         // Redirect to login through Spotify - returns Authorization Code
-        return $this->redirect($this->getApi()->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
+        return $this->redirect($this->getApi()->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['user-top-read', 'user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
     }
 
     /**
@@ -130,6 +133,11 @@ class MainController extends AppController
     public function dashboard()
     {
         $this->set('user', $this->getRequest()->getSession()->read('user'));
-        $this->set('current_song', $this->getApi()->getCurrentlyPlaying());
+        $this->set('topTracks', $this->getUserTopTracks());
+    }
+
+    public function getUserTopTracks()
+    {
+        return $this->getApi()->getTop('tracks', 'short_term', 5);
     }
 }

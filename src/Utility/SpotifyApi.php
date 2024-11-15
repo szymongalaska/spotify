@@ -152,7 +152,7 @@ class SpotifyApi
 
         $this->_addHeaders($headers);
 
-        $response = $this->request('POST',self::ACCOUNT_URL.'/api/token', $data);
+        $response = $this->_request('POST',self::ACCOUNT_URL.'/api/token', $data);
 
         $this->_setAccessToken($response['access_token']);
         $this->_setRefreshToken($response['refresh_token']);
@@ -175,13 +175,29 @@ class SpotifyApi
     }
 
     /**
+     * Get the current user's top artists or tracks based on calculated affinity.
+     * @param string $type The type of entity to return. Valid values: artists or tracks
+     * @param string $time_range Over what time frame the affinities are computed. Valid values: long_term (calculated from ~1 year of data and including all new data as it becomes available), medium_term (approximately last 6 months), short_term (approximately last 4 weeks). Default: medium_term
+     * @param int $limit The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
+     * @param int $offset The index of the first item to return. Default: 0 (the first item). Use with limit to get the next set of items.
+     * @return array
+     */
+    public function getTop(string $type, string $time_range = 'medium_term', int $limit = 20, int $offset = 0) :array
+    {
+        if(!in_array($type, ['artists', 'tracks']))
+            return null;
+
+        return $this->_request('GET', self::API_URL.'/v1/me/top/'.$type, ['time_range' => $time_range, 'limit' => $limit, 'offset' => $offset]);
+    }
+
+    /**
      * Get user profile
      * 
      * @return array
      */
     public function getProfile()
     {
-        return $this->request('GET', self::API_URL.'/v1/me');
+        return $this->_request('GET', self::API_URL.'/v1/me');
     }
 
     /**
@@ -191,7 +207,7 @@ class SpotifyApi
      */
     public function getCurrentlyPlaying()
     {
-        return $this->request('GET', self::API_URL.'/v1/me/player/currently-playing');
+        return $this->_request('GET', self::API_URL.'/v1/me/player/currently-playing');
     }
 
     /**
@@ -215,14 +231,21 @@ class SpotifyApi
         $this->_setRefreshToken($refreshToken);
     }
 
-    public function request($method, string $url, array $data = [])
+    /**
+     * Handles requests
+     * @param string $method
+     * @param string $url
+     * @param array $data
+     * @return mixed
+     */
+    private function _request(string $method, string $url, array $data = [])
     {
         try{
-            $result = $this->send($method, $url, $data);
+            $result = $this->_send($method, $url, $data);
         }
         catch(\Exception $e){
             if($this->shouldRetry())
-                $result = $this->send($method, $url, $data);
+                $result = $this->_send($method, $url, $data);
 
             throw $e;
         }
@@ -262,7 +285,7 @@ class SpotifyApi
      * 
      * @return \Cake\Http\Client\Response
      */
-    public function send(string $method, string $url, array $data = [])
+    private function _send(string $method, string $url, array $data = [])
     {
         $this->_setOptions();
 

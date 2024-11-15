@@ -32,6 +32,9 @@
 </head>
 <body>
     <nav class="top-nav">
+        <div class="top-nav-links">
+            <?php echo $this->element('song', ['track' => $current_song['item'], 'playing' => true]) ?>
+        </div>
         <div class="top-nav-user">
             <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
             <span><?= h($this->getRequest()->getSession()->read('user')['display_name']); ?></span>
