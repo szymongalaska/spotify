@@ -82,4 +82,18 @@ class UsersTable extends Table
 
         return $validator;
     }
+
+    /**
+     * Updates tokens of entity
+     * @param \App\Model\Entity\User $entity
+     * @param string $accessToken
+     * @param string $refreshToken
+     * @return \App\Model\Entity\User
+     */
+    public function updateUserTokens(\App\Model\Entity\User $entity, string $accessToken, string $refreshToken)
+    {
+        $entity = $this->patchEntity($entity, ['access_token' => $accessToken, 'refresh_token' => $refreshToken]);
+        $this->save($entity);
+        return $entity;
+    }
 }

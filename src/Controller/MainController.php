@@ -22,8 +22,15 @@ class MainController extends AppController
      */
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
-        if(!$this->getRequest()->getSession()->check('user')  && $this->getRequest()->getParam('action') !== 'login')
-            return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
+        if($this->getRequest()->getParam('action') !== 'login')
+        {
+            if(!$this->getRequest()->getSession()->check('user'))
+                return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
+
+            if(!$this->getApi()->checkTokens())
+                $this->getApi()->setTokensOfUser($this->getRequest()->getSession()->read('user')->access_token, $this->getRequest()->getSession()->read('user')->refresh_token);
+
+        }
     }
     /**
      * Request authorization from the user and redirect to corresponding page
@@ -78,7 +85,11 @@ class MainController extends AppController
     private function _setUser(string $accessToken, string $refreshToken)
     {
         $profile = $this->getApi()->getProfile();
-        $user = $this->fetchTable('Users')->findBySpotifyId($profile['id'])->first() ?? $this->_saveUser($profile, $accessToken, $refreshToken);
+
+        if($user = $this->fetchTable('Users')->findBySpotifyId($profile['id'])->first())
+            $user = $this->fetchTable('Users')->updateUserTokens($user, $accessToken, $refreshToken);
+        else
+            $user = $this->_saveUser($profile, $accessToken, $refreshToken);
         
         if($user === false)
         {
@@ -119,5 +130,6 @@ class MainController extends AppController
     public function dashboard()
     {
         $this->set('user', $this->getRequest()->getSession()->read('user'));
+        $this->set('current_song', $this->getApi()->getCurrentlyPlaying());
     }
 }

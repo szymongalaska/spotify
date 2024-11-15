@@ -194,6 +194,27 @@ class SpotifyApi
         return $this->request('GET', self::API_URL.'/v1/me/player/currently-playing');
     }
 
+    /**
+     * Checks wheter tokens are set
+     * @return bool
+     */
+    public function checkTokens()
+    {
+        return isset($this->_accessToken) && isset($this->_refreshToken);
+    }
+
+    /**
+     * Sets tokens from user data
+     * @param string $accessToken
+     * @param string $refreshToken
+     * @return void
+     */
+    public function setTokensOfUser(string $accessToken, string $refreshToken)
+    {
+        $this->_setAccessToken($accessToken);
+        $this->_setRefreshToken($refreshToken);
+    }
+
     public function request($method, string $url, array $data = [])
     {
         try{
