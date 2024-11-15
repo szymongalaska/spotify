@@ -25,7 +25,7 @@ $this->disableAutoLayout();
 <body id="home-page">
     <header>
         <div class="container text-center">
-            <img alt="CakePHP"
+            <img alt="Spotify Logo"
                 src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Full_Logo_RGB_Green.png"
                 width="350" />
             <h1>

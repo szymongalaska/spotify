@@ -14,6 +14,17 @@ class MainController extends AppController
         parent::initialize();
         $this->_api = new SpotifyApi(env('CLIENT_ID'), env('CLIENT_SECRET'), env('REDIRECT_URI'));
     }
+
+    /**
+     * Redirects to login screen if not logged in
+     * @param \Cake\Event\EventInterface $event
+     * @return \Cake\Http\Response|null
+     */
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+    {
+        if(!$this->getRequest()->getSession()->check('user'))
+            return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
+    }
     /**
      * Request authorization from the user and redirect to corresponding page
      * 
