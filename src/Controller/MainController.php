@@ -54,7 +54,7 @@ class MainController extends AppController
         }
 
         // Redirect to login through Spotify - returns Authorization Code
-        return $this->redirect($this->getApi()->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
+        return $this->redirect($this->getApi()->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
     }
 
     /**
@@ -73,7 +73,7 @@ class MainController extends AppController
      * @param string $accessToken Access Token acquired from Spotify API
      * @param string $refreshToken Refresh Token acquired from Spotify API
      * 
-     * @return bool|\Cake\Http\Response|null
+     * @return \Cake\Http\Response|null
      */
     private function _setUser(string $accessToken, string $refreshToken)
     {
@@ -87,8 +87,6 @@ class MainController extends AppController
         }
 
         $this->getRequest()->getSession()->write('user', $user);
-
-        return true;
     }
 
     /**

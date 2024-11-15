@@ -20,7 +20,7 @@
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
-        <?= __('Hello {$user.display_name}'); ?>
+        <?= __('Hello, {0}', $user['display_name']); ?>
     </title>
     <?= $this->Html->meta('icon') ?>
 

@@ -4,24 +4,76 @@ declare(strict_types=1);
 namespace App\Utility;
 
 use Cake\Http\Client;
+use Cake\Http\Exception\BadRequestException;
 
 class SpotifyApi
 {
 
-    private $_accessToken;
+    /**
+     * Access Token used in requests
+     * @var string
+     */
+    private string $_accessToken;
 
-    private $_refreshToken;
+    /**
+     * Refresh Token used to refresh Access Token
+     * @var string
+     */
+    private string $_refreshToken;
+
+    /**
+     * Client object
+     * @var \Cake\Http\Client
+     */
     private $_httpClient;
 
-    private $_clientId;
+    /**
+     * Client ID
+     * @var string
+     */
+    private string $_clientId;
 
-    private $_clientSecret;
+    /**
+     * Client Secret
+     * @var string
+     */
+    private string $_clientSecret;
 
-    private $_redirectUri;
+    /**
+     * URI to redirect
+     * @var string
+     */
+    private string $_redirectUri;
 
+    /**
+     * URL to account 
+     * @var string
+     */
     public const ACCOUNT_URL = "https://accounts.spotify.com";
 
+    /**
+     * URL to api
+     * @var string
+     */
     public const API_URL = "https://api.spotify.com";
+
+    /**
+     * Options used in request
+     * @var array
+     */
+    private array $_options;
+
+    /**
+     * Headers used in request
+     * @var array
+     */
+    private array $_headers;
+
+    /**
+     * Indicates if request should be retried
+     * @var bool
+     */
+    private bool $_retry = false;
 
     /**
      * Constructor
@@ -35,6 +87,10 @@ class SpotifyApi
         $this->_clientId = $clientId;
         $this->_clientSecret = $clientSecret;
         $this->_redirectUri = $redirectUri;
+        
+        $this->_options = [];
+        $this->_headers = [];
+
         $this->_httpClient = new Client();
     }
 
@@ -68,7 +124,7 @@ class SpotifyApi
      * 
      * @param string $code Authorization Code returned after successful log in through Authorization URL
      * 
-     * @return bool
+     * @return void
      */
     public function requestAccessToken(string $code)
     {
@@ -79,55 +135,176 @@ class SpotifyApi
             'redirect_uri' => $this->getRedirectUri(),
         ];
 
-        $options =
-        [
-            'headers' => 
-            [
-                'Authorization' => 'Basic '.base64_encode($this->getClientId().':'.$this->getClientSecret()),
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            ],
-        ];
-
-        $response = $this->getClient()->post(self::ACCOUNT_URL.'/api/token', $data, $options);
-
-        if($response->getStatusCode() === 200)
-        {
-            $this->_setAccessToken($response->getJson()['access_token']);
-            $this->_setRefreshToken($response->getJson()['refresh_token']);
-            return true;
-        }
-
-        return false;
+        $this->sendTokenRequest($data);
     }
 
     /**
-     * Get JSON of user profile
+     * Sends request to Token endpoint
+     * @param array $data
+     * @return void
+     */
+    private function sendTokenRequest($data)
+    {
+        $headers = [
+            'Authorization' => 'Basic '.base64_encode($this->getClientId().':'.$this->getClientSecret()),
+            'Content-Type' => 'application/x-www-form-urlencoded',
+        ];
+
+        $this->_addHeaders($headers);
+
+        $response = $this->request('POST',self::ACCOUNT_URL.'/api/token', $data);
+
+        $this->_setAccessToken($response['access_token']);
+        $this->_setRefreshToken($response['refresh_token']);
+    }
+
+    /**
+     * Refreshes token from Spotify API
+     * 
+     * @return void
+     */
+    private function _refreshTokens()
+    {
+        $data =
+        [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $this->getRefreshToken(),
+        ];
+
+        $this->sendTokenRequest($data);
+    }
+
+    /**
+     * Get user profile
      * 
      * @return array
      */
     public function getProfile()
     {
-        return $this->getRequest('/v1/me')->getJson();
+        return $this->request('GET', self::API_URL.'/v1/me');
     }
 
     /**
-     * Do a GET request to the Spotify API
+     * Get currently playing song
      * 
+     * @return array
+     */
+    public function getCurrentlyPlaying()
+    {
+        return $this->request('GET', self::API_URL.'/v1/me/player/currently-playing');
+    }
+
+    public function request($method, string $url, array $data = [])
+    {
+        try{
+            $result = $this->send($method, $url, $data);
+        }
+        catch(\Exception $e){
+            if($this->shouldRetry())
+                $result = $this->send($method, $url, $data);
+
+            throw $e;
+        }
+
+        $this->_clearOptions();
+
+        if($result->getStatusCode() === 200)
+            return $result->getJson();
+    }
+
+    private function _clearOptions()
+    {
+        $this->_options = [];
+        $this->_headers = [];
+    }
+
+    /**
+     * Returns if request should be retried and changes state if needed
+     * @return bool
+     */
+    public function shouldRetry()
+    {
+        if($this->_retry)
+        {
+            $this->_retry = false;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Send request to the Spotify API
+     * 
+     * @param string $method GET/POST
      * @param string $url URL to the endpoint after API_URL
+     * @param array $data Optional. Data to send with request
      * 
      * @return \Cake\Http\Client\Response
      */
-    public function getRequest($url)
+    public function send(string $method, string $url, array $data = [])
     {
-        $options = 
-        [
-            'headers' =>
-            [
-                'Authorization' => 'Bearer '.$this->getAccessToken(),
-            ],
-        ];
+        $this->_setOptions();
 
-        return $this->getClient()->get(self::API_URL.$url, [], $options);
+        $response = match(strtoupper($method))
+        {
+            'GET' => $this->getClient()->get($url, $data, $this->_options),
+            'POST' => $this->getClient()->post($url, $data, $this->_options),
+        };
+
+        if($response->getStatusCode() >= 400)
+            $this->_handleError($response);
+
+        return $response;
+    }
+
+    /**
+     * Prepares options to send with API
+     * @return void
+     */
+    private function _setOptions()
+    {
+        if(!isset($this->_options['headers']) && empty($this->_headers))
+            $this->_addHeaders(['Authorization' => 'Bearer '.$this->getAccessToken()]);
+
+        $this->_options['headers'] = $this->_headers;
+    }
+
+    /**
+     * Adds options which will be used in request to API
+     * @param array $option
+     * @return void
+     */
+    private function _addOptions(array $option)
+    {
+        $this->_options = array_merge($this->_options, $option);
+    }
+
+    /**
+     * Add headers which will be used in request to API
+     * @param array $headers
+     * @return void
+     */
+    private function _addHeaders(array $headers)
+    {
+        $this->_headers = array_merge($this->_headers, $headers);
+    }
+
+    /**
+     * Summary of _handleError
+     * @param \Cake\Http\Client\Response $response
+     * @return void
+     */
+    private function _handleError(\Cake\Http\Client\Response $response)
+    {
+        if($response->getStatusCode() === 401)
+        {
+            if($this->_refreshTokens())
+                $this->retry();
+            else
+                throw new \Exception('Access revoked. Please login');
+        }
+        else
+            throw new \Exception($response->getStatusCode().' - '.$response->getReasonPhrase());
     }
 
     /**
@@ -140,6 +317,11 @@ class SpotifyApi
     private function _setAccessToken($accessToken)
     {
         $this->_accessToken = $accessToken;
+    }
+
+    public function retry()
+    {
+        $this->_retry = true;
     }
 
     /**
