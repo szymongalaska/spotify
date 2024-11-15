@@ -22,7 +22,7 @@ class MainController extends AppController
      */
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
-        if(!$this->getRequest()->getSession()->check('user'))
+        if(!$this->getRequest()->getSession()->check('user')  && $this->getRequest()->getParam('action') !== 'login')
             return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
     }
     /**
