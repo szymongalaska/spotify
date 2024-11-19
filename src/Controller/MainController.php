@@ -229,5 +229,4 @@ class MainController extends AppController
         $this->set('playing', true);
         $this->render('/element/song');  
     }
-
 }

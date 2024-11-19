@@ -213,7 +213,7 @@ class SpotifyApi
     }
 
     /**
-     * Get a list of the songs saved in the current Spotify user's 'Your Music' library.
+     * Get a list of all songs saved in the current Spotify user's 'Your Music' library.
      * @return array
      */
     public function getAllSavedTracks()
@@ -230,6 +230,17 @@ class SpotifyApi
         while (!empty($response['next']));
 
         return $tracks;
+    }
+
+    /**
+     * Get a list of the songs saved in the current Spotify user's 'Your Music' library.
+     * @param int $limit The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
+     * @param mixed $offset The index of the first item to return. Default: 0 (the first item). Use with limit to get the next set of items.
+     * @return array
+     */
+    public function getSavedTracks($limit = 20, $offset = 0)
+    {
+        return $this->_request('GET', self::API_URL.'/v1/me/tracks', ['limit' => $limit, 'offset' => $offset]);
     }
 
     /**
