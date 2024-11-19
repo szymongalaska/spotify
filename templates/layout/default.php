@@ -34,8 +34,10 @@
 </head>
 <body>
     <nav class="top-nav">
-        <div class="top-nav-links" style="width: 35%;">
-            <?php echo $this->element('song', ['track' => $current_song['item'], 'playing' => true]) ?>
+        <div class="top-nav-links" id="current-song" style="width: 35%;">
+            <?php if($current_song): ?>
+                <?php echo $this->element('song', ['track' => $current_song['item'], 'playing' => true]) ?>
+            <?php endif; ?>
         </div>
         <div class="top-nav-user">
                 <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
@@ -59,9 +61,12 @@
                         'url': '<?= $this->Url->build(['controller' => 'Main', 'action' => 'ajaxGetCurrentSong']) ?>',
                         success: function(response)
                         {
-                            if($('nav.top-nav div.row.song').data('id') !== $(response).data('id'))
+                            if($('div#current-song').children().length == 0 && response !== '')
                             {
-                                console.log(response);
+                                $(this).append(respone);
+                            }
+                            else if($('nav.top-nav div.row.song').data('id') !== $(response).data('id'))
+                            {
                                 $('nav.top-nav div.row.song').fadeOut(400, function(){
                                     $(this).replaceWith(response);
                                 });

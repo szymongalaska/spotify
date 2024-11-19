@@ -216,9 +216,18 @@ class MainController extends AppController
      */
     public function ajaxGetCurrentSong()
     {
-        $this->set('track', $this->getApi()->getCurrentlyPlaying()['item']);
+        $this->viewBuilder()->setLayout('ajax');
+        
+        $currentSong = $this->getApi()->getCurrentlyPlaying();
+        if($currentSong === null)
+        {
+            $this->autoRender = false;
+            return null;
+        }
+
+        $this->set('track', $currentSong['item']);
         $this->set('playing', true);
-        $this->render('/element/song', 'ajax');  
+        $this->render('/element/song');  
     }
 
 }
