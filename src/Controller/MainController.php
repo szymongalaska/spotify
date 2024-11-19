@@ -136,8 +136,15 @@ class MainController extends AppController
         $this->set('topTracks', $this->getUserTopTracks());
     }
 
-    public function getUserTopTracks()
+    public function ajaxGetTopTracks($term)
     {
-        return $this->getApi()->getTop('tracks', 'short_term', 5);
+        $this->set('topTracks', $this->getUserTopTracks($term));
+        $this->render('/element/tracks', 'ajax');
+
+    }
+
+    public function getUserTopTracks($term = 'medium_term')
+    {
+        return $this->getApi()->getTop('tracks', $term, 5);
     }
 }

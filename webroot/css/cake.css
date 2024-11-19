@@ -344,3 +344,33 @@ img.top-nav-profile-picture
     font-weight: bold;
     
 }
+
+div.top-tracks > div.row
+{
+    justify-content: space-between;
+    padding: 0 2rem;
+}
+
+div.top-tracks select
+{
+    padding-right: 4rem;
+    border: 0;
+}
+
+.loader-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.relative-container
+{
+    position: relative;
+}
