@@ -2,7 +2,7 @@
     <div class="row">
     <h3><?= __('Top tracks') ?></h3>
     <p>
-        <?= $this->Form->select('term', ['short_term' => __('Last month'), 'medium_term' => __('Last 6 months'), 'long_term' => __('Last year')], ['default' => 'medium_term']); ?>
+        <?= $this->Form->select('term', ['short_term' => __("{0,plural,=1{Last month} other{Last # months}}", 1), 'medium_term' => __("{0,plural,=1{Last month} other{Last # months}}", 6), 'long_term' => __('{0,plural,=1{Last year} other{Last # years}}', 1)], ['default' => 'medium_term']); ?>
     </p>
     </div>
     <?php echo $this->element('tracks', ['topTracks' => $topTracks]); ?>

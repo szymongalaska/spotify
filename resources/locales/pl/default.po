@@ -1,0 +1,8 @@
+msgid "{0,plural,=1{Last month} other{Last # months}}"
+msgstr "{0,plural,=1{Ostatni miesiąc} few{Ostatnie # miesiące} other{Ostatnie # miesięcy}}"
+
+msgid "{0,plural,=1{Last year} other{Last # years}}"
+msgstr "{0,plural,=1{Ostatni rok} other{Ostatnie # lat}}"
+
+msgid "Top tracks"
+msgstr "Najczęściej słuchane"

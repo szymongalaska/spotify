@@ -128,7 +128,7 @@ class MainController extends AppController
     /**
      * Render dashboard
      * 
-     * @return void
+     * @return \Cake\Http\Response|null
      */
     public function dashboard()
     {
@@ -136,13 +136,23 @@ class MainController extends AppController
         $this->set('topTracks', $this->getUserTopTracks());
     }
 
+    /**
+     * Renders getUserTopTracks
+     * @see getUserTopTracks
+     * @param string $term
+     * @return \Cake\Http\Response|null
+     */
     public function ajaxGetTopTracks($term)
     {
         $this->set('topTracks', $this->getUserTopTracks($term));
         $this->render('/element/tracks', 'ajax');
-
     }
 
+    /**
+     * Get the current user's top tracks based on calculated affinity and selected time frame
+     * @param string $term
+     * @return array
+     */
     public function getUserTopTracks($term = 'medium_term')
     {
         return $this->getApi()->getTop('tracks', $term, 5);
