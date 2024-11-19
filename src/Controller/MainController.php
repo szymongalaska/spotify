@@ -38,6 +38,7 @@ class MainController extends AppController
                 $this->getApi()->setTokensOfUser($this->getRequest()->getSession()->read('user')->access_token, $this->getRequest()->getSession()->read('user')->refresh_token);
         
             // Get current or last played song
+            $this->set('user', $this->getRequest()->getSession()->read('user'));
             $this->set('current_song', $this->getApi()->getCurrentlyPlaying());
         }
 
@@ -140,9 +141,18 @@ class MainController extends AppController
      */
     public function dashboard()
     {
-        $this->set('user', $this->getRequest()->getSession()->read('user'));
         $this->set('topTracks', $this->getUserTopTracks());
         $this->set('topArtists', $this->getUserTopArtists());
+    }
+
+    /**
+     * Render playlist merger
+     * 
+     * @return \Cake\Http\Response|null
+     */
+    public function playlistMerger()
+    {
+        $this->set('myPlaylists', $this->getUserPlaylists());
     }
 
     /**
@@ -228,5 +238,15 @@ class MainController extends AppController
         $this->set('track', $currentSong['item']);
         $this->set('playing', true);
         $this->render('/element/song');  
+    }
+
+    /**
+     * Get a list of all playlists owned or followed by the current Spotify user.
+     * 
+     * @return array
+     */
+    public function getUserPlaylists()
+    {
+        return $this->getApi()->getAllPlaylists();
     }
 }

@@ -163,7 +163,7 @@ class SpotifyApi
     /**
      * Refreshes token from Spotify API
      * 
-     * @return void
+     * @return bool
      */
     private function _refreshTokens()
     {
@@ -174,6 +174,8 @@ class SpotifyApi
         ];
 
         $this->sendTokenRequest($data);
+
+        return true;
     }
 
     /**

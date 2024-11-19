@@ -1,5 +1,12 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <div id="artists">
-    <?php foreach ($topArtists['items'] as $artist): ?>
-        <?php echo $this->element('artist', ['artist' => $artist]); ?>
-    <?php endforeach; ?>
+    <ul>
+        <?php foreach ($topArtists['items'] as $artist): ?>
+            <li><?php echo $this->element('artist', ['artist' => $artist]); ?></li>
+        <?php endforeach; ?>
+    </ul>
 </div>

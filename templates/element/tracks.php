@@ -1,5 +1,12 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <div id="tracks">
-    <?php foreach ($topTracks['items'] as $track): ?>
-        <?php echo $this->element('song', ['track' => $track]); ?>
-    <?php endforeach; ?>
+    <ul>
+        <?php foreach ($topTracks['items'] as $track): ?>
+            <li><?php echo $this->element('song', ['track' => $track]); ?></li>
+        <?php endforeach; ?>
+    </ul>
 </div>

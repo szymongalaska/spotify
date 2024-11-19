@@ -63,7 +63,7 @@
                         {
                             if($('div#current-song').children().length == 0 && response !== '')
                             {
-                                $(this).append(respone);
+                                $(this).append(response);
                             }
                             else if($('nav.top-nav div.row.song').data('id') !== $(response).data('id'))
                             {

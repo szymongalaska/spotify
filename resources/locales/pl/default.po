@@ -9,3 +9,6 @@ msgstr "Najczęściej słuchane"
 
 msgid "Top artists"
 msgstr "Ulubieni wykonawcy"
+
+msgid "Your playlists"
+msgstr "Twoje playlisty"

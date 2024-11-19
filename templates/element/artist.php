@@ -1,6 +1,11 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ */
+?>
 <div class="row artist">
     <?php if($artist['images']): ?>
-    <div class="column column-10">
+    <div class="image-column column column-10">
         <?= $this->Html->image($artist['images'][2]['url'], ['alt' => $artist['name']]) ?>
     </div>
     <?php endif; ?>
