@@ -345,13 +345,13 @@ img.top-nav-profile-picture
     
 }
 
-div.top-tracks > div.row
+div.top > div.row
 {
     justify-content: space-between;
     padding: 0 2rem;
 }
 
-div.top-tracks select
+div.top select
 {
     padding-right: 4rem;
     border: 0;
@@ -373,4 +373,16 @@ div.top-tracks select
 .relative-container
 {
     position: relative;
+}
+
+div.top img
+{
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+}
+
+div.content
+{
+    margin: 2rem;
 }

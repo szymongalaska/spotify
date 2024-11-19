@@ -134,6 +134,7 @@ class MainController extends AppController
     {
         $this->set('user', $this->getRequest()->getSession()->read('user'));
         $this->set('topTracks', $this->getUserTopTracks());
+        $this->set('topArtists', $this->getUserTopArtists());
     }
 
     /**
@@ -158,9 +159,36 @@ class MainController extends AppController
         return $this->getApi()->getTop('tracks', $term, 5);
     }
 
+    /**
+     * Logout user by deleting session data
+     * @return \Cake\Http\Response|null
+     */
     public function logout()
     {
         $this->getRequest()->getSession()->delete('user');
         return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
     }
+
+    /**
+     * Get the current user's top artists based on calculated affinity and selected time frame
+     * @param string $term
+     * @return array
+     */
+    public function getUserTopArtists($term = 'medium_term')
+    {
+        return $this->getApi()->getTop('artists', $term, 5);
+    }
+
+     /**
+     * Renders getUserTopArtists
+     * @see getUserTopArtists
+     * @param string $term
+     * @return \Cake\Http\Response|null
+     */
+    public function ajaxGetTopArtists($term)
+    {
+        $this->set('topArtists', $this->getUserTopArtists($term));
+        $this->render('/element/artists', 'ajax');
+    }
+
 }

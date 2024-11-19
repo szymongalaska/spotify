@@ -38,8 +38,8 @@
             <?php echo $this->element('song', ['track' => $current_song['item'], 'playing' => true]) ?>
         </div>
         <div class="top-nav-user">
-            <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
-            <span><?= h($this->getRequest()->getSession()->read('user')['display_name']); ?></span>
+                <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
+                <span><?= h($this->getRequest()->getSession()->read('user')['display_name']); ?></span>
             <div class="top-nav-links">
                 <?= $this->Html->link('<i class="fa fa-right-from-bracket"></i>', ['controller' => 'Main', 'action' => 'logout'], ['escape' => false]); ?>
             </div>
