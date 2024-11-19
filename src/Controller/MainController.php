@@ -4,9 +4,14 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Utility\SpotifyApi;
+use Cake\Cache\Cache;
 
 class MainController extends AppController
 {
+    /**
+     * Spotify API Object
+     * @var \App\Utility\SpotifyApi
+     */
     private $_api;
 
     public function initialize(): void
@@ -16,7 +21,7 @@ class MainController extends AppController
     }
 
     /**
-     * Redirects to login screen if not logged in
+     * 
      * @param \Cake\Event\EventInterface $event
      * @return \Cake\Http\Response|null
      */
@@ -24,16 +29,19 @@ class MainController extends AppController
     {
         if(!in_array($this->getRequest()->getParam('action'), ['login', 'logout']))
         {
+            // Redirect to login screen if not logged in
             if(!$this->getRequest()->getSession()->check('user'))
                 return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
 
+            // Set tokens
             if(!$this->getApi()->checkTokens())
                 $this->getApi()->setTokensOfUser($this->getRequest()->getSession()->read('user')->access_token, $this->getRequest()->getSession()->read('user')->refresh_token);
-
+        
+            // Get current or last played song
+            $this->set('current_song', $this->getApi()->getCurrentlyPlaying());
         }
 
-        if($this->getRequest()->getSession()->check('user'))
-            $this->set('current_song', $this->getApi()->getCurrentlyPlaying());
+        
     }
     /**
      * Request authorization from the user and redirect to corresponding page
@@ -157,6 +165,17 @@ class MainController extends AppController
     public function getUserTopTracks($term = 'medium_term')
     {
         return $this->getApi()->getTop('tracks', $term, 5);
+    }
+
+    /**
+     * Retrieve users saved tracks and save it to cache or retrieve if cache already exists
+     * @return array
+     */
+    public function getUserSavedTracks()
+    {
+        return Cache::remember($this->getRequest()->getSession()->read('user')['id'].'-savedTracks', function(){
+            return $this->getApi()->getAllSavedTracks();
+        }, '_spotify_');
     }
 
     /**

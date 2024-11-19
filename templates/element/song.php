@@ -1,3 +1,4 @@
+<?php if($track['is_local'] == false): ?>
 <div class="row song" data-id="<?= $track['id'] ?>">
     <?php if($track['album']['images']): ?>
     <div class="column <?php echo isset($playing) && $playing == true ? 'column-20' : 'column-10' ?>">
@@ -19,3 +20,4 @@
         </div>
     </div>
 </div>
+<?php endif; ?>

@@ -154,10 +154,10 @@ class SpotifyApi
 
         $response = $this->_request('POST',self::ACCOUNT_URL.'/api/token', $data);
 
-        var_dump($response);
-
         $this->_setAccessToken($response['access_token']);
-        $this->_setRefreshToken($response['refresh_token']);
+
+        if($response['refresh_token'])
+            $this->_setRefreshToken($response['refresh_token']);
     }
 
     /**
@@ -210,6 +210,26 @@ class SpotifyApi
     public function getCurrentlyPlaying()
     {
         return $this->_request('GET', self::API_URL.'/v1/me/player/currently-playing');
+    }
+
+    /**
+     * Get a list of the songs saved in the current Spotify user's 'Your Music' library.
+     * @return array
+     */
+    public function getAllSavedTracks()
+    {
+        $tracks = [];
+        $url = self::API_URL.'/v1/me/tracks?limit=50';
+
+        do
+        {
+            $response = $this->_request('GET', $url);
+            $url = $response['next'];
+            $tracks = array_merge($tracks,$response['items']);
+        }
+        while (!empty($response['next']));
+
+        return $tracks;
     }
 
     /**
@@ -349,6 +369,11 @@ class SpotifyApi
             else
                 throw new \Exception('Access revoked. Please login');
         }
+        else if($response->getStatusCode() === 429)
+            {
+                sleep((int) $response->getHeader('retry-after'));
+                $this->retry();
+            }
         else
             throw new \Exception($response->getStatusCode().' - '.$response->getReasonPhrase());
     }

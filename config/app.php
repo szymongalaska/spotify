@@ -100,6 +100,13 @@ return [
             'path' => CACHE,
             'url' => env('CACHE_DEFAULT_URL', null),
         ],
+        
+        '_spotify_' => [
+            'className' => FileEngine::class,
+            'path' => CACHE,
+            'url' => env('CACHE_DEFAULT_URL', null),
+            'duration' => '+1 months',
+        ],
 
         /*
          * Configure the cache used for general framework caching.
