@@ -218,18 +218,8 @@ class SpotifyApi
      */
     public function getAllSavedTracks()
     {
-        $tracks = [];
-        $url = self::API_URL.'/v1/me/tracks?limit=50';
-
-        do
-        {
-            $response = $this->_request('GET', $url);
-            $url = $response['next'];
-            $tracks = array_merge($tracks,$response['items']);
-        }
-        while (!empty($response['next']));
-
-        return $tracks;
+        
+        return $this->_batchRetrieveData(self::API_URL.'/v1/me/tracks?limit=50');
     }
 
     /**
@@ -238,9 +228,50 @@ class SpotifyApi
      * @param mixed $offset The index of the first item to return. Default: 0 (the first item). Use with limit to get the next set of items.
      * @return array
      */
-    public function getSavedTracks($limit = 20, $offset = 0)
+    public function getSavedTracks(int $limit = 20, int $offset = 0)
     {
         return $this->_request('GET', self::API_URL.'/v1/me/tracks', ['limit' => $limit, 'offset' => $offset]);
+    }
+
+    /**
+     * Get a list of the playlists owned or followed by the current Spotify user.
+     * @param int $limit The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
+     * @param int $offset The index of the first playlist to return. Default: 0 (the first object). Maximum offset: 100.000. Use with limit to get the next set of playlists.'
+     * @return array
+     */
+    public function getPlaylists(int $limit = 20, int $offset = 0)
+    {
+        return $this->_request('GET', self::API_URL.'/v1/me/playlists', ['limit' => $limit, 'offset' => $offset]);
+    }
+
+    /**
+     * Get a list of all playlists owned or followed by the current Spotify user.
+     * @return array
+     */
+    public function getAllPlaylists()
+    {
+        return $this->_batchRetrieveData(self::API_URL.'/v1/me/playlists?limit=50');
+    }
+
+    /**
+     * Batch retrieve all data from any given URL which returns 'next' url (eg. Playlists)
+     * @param string $url URL used in request
+     * @param string $method Method used in request. GET or POST. Default GET
+     * @return array
+     */
+    private function _batchRetrieveData(string $url, string $method = 'GET')
+    {
+        $items = [];
+        
+        do
+        {
+            $response = $this->_request($method, $url);
+            $url = $response['next'];
+            $items = array_merge($items, $response['items']);
+        }
+        while(!empty($response['next']));
+
+        return $items;
     }
 
     /**
