@@ -1,4 +1,4 @@
-<div class="row song">
+<div class="row song" data-id="<?= $track['id'] ?>">
     <?php if($track['album']['images']): ?>
     <div class="column <?php echo isset($playing) && $playing == true ? 'column-20' : 'column-10' ?>">
         <?= $this->Html->image($track['album']['images'][0]['url'], ['alt' => $track['album']['name']]) ?>

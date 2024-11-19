@@ -59,8 +59,9 @@
                         'url': '<?= $this->Url->build(['controller' => 'Main', 'action' => 'ajaxGetCurrentSong']) ?>',
                         success: function(response)
                         {
-                            if($('nav.top-nav div.row.song').prop('outerHTML') !== response)
+                            if($('nav.top-nav div.row.song').data('id') !== $(response).data('id'))
                             {
+                                console.log(response);
                                 $('nav.top-nav div.row.song').fadeOut(400, function(){
                                     $(this).replaceWith(response);
                                 });
