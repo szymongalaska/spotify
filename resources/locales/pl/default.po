@@ -6,3 +6,6 @@ msgstr "{0,plural,=1{Ostatni rok} other{Ostatnie # lat}}"
 
 msgid "Top tracks"
 msgstr "Najczęściej słuchane"
+
+msgid "Top artists"
+msgstr "Ulubieni wykonawcy"

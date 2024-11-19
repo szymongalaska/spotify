@@ -22,7 +22,7 @@ class MainController extends AppController
      */
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
-        if($this->getRequest()->getParam('action') !== 'login')
+        if(!in_array($this->getRequest()->getParam('action'), ['login', 'logout']))
         {
             if(!$this->getRequest()->getSession()->check('user'))
                 return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
@@ -64,7 +64,7 @@ class MainController extends AppController
         }
 
         // Redirect to login through Spotify - returns Authorization Code
-        return $this->redirect($this->getApi()->getAuthorizeUrl(['scope' => ['user-top-read', 'user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
+        return $this->redirect($this->getApi()->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['user-top-read', 'user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
     }
 
     /**
@@ -189,6 +189,17 @@ class MainController extends AppController
     {
         $this->set('topArtists', $this->getUserTopArtists($term));
         $this->render('/element/artists', 'ajax');
+    }
+
+    /**
+     * Renders current song element
+     * @return \Cake\Http\Response|null
+     */
+    public function ajaxGetCurrentSong()
+    {
+        $this->set('track', $this->getApi()->getCurrentlyPlaying()['item']);
+        $this->set('playing', true);
+        $this->render('/element/song', 'ajax');  
     }
 
 }

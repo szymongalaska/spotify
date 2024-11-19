@@ -34,7 +34,7 @@
 </head>
 <body>
     <nav class="top-nav">
-        <div class="top-nav-links">
+        <div class="top-nav-links" style="width: 35%;">
             <?php echo $this->element('song', ['track' => $current_song['item'], 'playing' => true]) ?>
         </div>
         <div class="top-nav-user">
@@ -52,6 +52,23 @@
         </div>
     </main>
     <footer>
+        <script>
+                setInterval(function(){
+                    $.ajax({
+                        'method': 'GET',
+                        'url': '<?= $this->Url->build(['controller' => 'Main', 'action' => 'ajaxGetCurrentSong']) ?>',
+                        success: function(response)
+                        {
+                            if($('nav.top-nav div.row.song').prop('outerHTML') !== response)
+                            {
+                                $('nav.top-nav div.row.song').fadeOut(400, function(){
+                                    $(this).replaceWith(response);
+                                });
+                            }
+                        }
+                    });
+                }, 10000);
+        </script>
     </footer>
 </body>
 </html>

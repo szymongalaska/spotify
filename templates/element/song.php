@@ -1,7 +1,7 @@
 <div class="row song">
     <?php if($track['album']['images']): ?>
-    <div class="column <?php echo isset($playing) && $playing == true ? 'column-33' : 'column-10' ?>">
-        <?= $this->Html->image($track['album']['images'][2]['url'], ['alt' => $track['album']['name']]) ?>
+    <div class="column <?php echo isset($playing) && $playing == true ? 'column-20' : 'column-10' ?>">
+        <?= $this->Html->image($track['album']['images'][0]['url'], ['alt' => $track['album']['name']]) ?>
     </div>
     <?php endif; ?>
     <div class="column" style="display: flex; flex-direction: column; justify-content: center">

@@ -154,6 +154,8 @@ class SpotifyApi
 
         $response = $this->_request('POST',self::ACCOUNT_URL.'/api/token', $data);
 
+        var_dump($response);
+
         $this->_setAccessToken($response['access_token']);
         $this->_setRefreshToken($response['refresh_token']);
     }

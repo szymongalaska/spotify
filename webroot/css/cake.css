@@ -7,7 +7,7 @@
     --color-cakephp-lightblue: #34bdd7;
 
     --color-green: #18d860;
-    --color-green-light: #18d860bf;
+    --color-green-light: #1ED760;
 
     /* These are additional colors */
     --color-lightgray: #606c76;
@@ -375,11 +375,27 @@ div.top select
     position: relative;
 }
 
-div.top img
+div.song img, div.artist img
 {
     width: 64px;
     height: 64px;
     object-fit: cover;
+}
+
+@media(min-width: 1024px)
+{
+    div.song img, div.artist img
+    {
+        border-radius: 4px;
+    }
+}
+
+@media(max-width: 1023px)
+{
+    div.song img, div.artist img
+    {
+        border-radius: 2px;
+    }
 }
 
 div.content
