@@ -64,7 +64,7 @@ class MainController extends AppController
         }
 
         // Redirect to login through Spotify - returns Authorization Code
-        return $this->redirect($this->getApi()->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['user-top-read', 'user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
+        return $this->redirect($this->getApi()->getAuthorizeUrl(['scope' => ['user-top-read', 'user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
     }
 
     /**
@@ -156,5 +156,11 @@ class MainController extends AppController
     public function getUserTopTracks($term = 'medium_term')
     {
         return $this->getApi()->getTop('tracks', $term, 5);
+    }
+
+    public function logout()
+    {
+        $this->getRequest()->getSession()->delete('user');
+        return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
     }
 }
