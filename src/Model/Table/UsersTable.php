@@ -44,6 +44,10 @@ class UsersTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+
+        $this->hasOne('PlaylistMerger')    
+            ->setForeignKey('user_id')
+            ->setBindingKey('id');
     }
 
     /**
