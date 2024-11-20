@@ -100,16 +100,6 @@ class MainController extends AppController
     }
 
     /**
-     * Render playlist merger
-     * 
-     * @return \Cake\Http\Response|null
-     */
-    public function playlistMerger()
-    {
-        $this->set('myPlaylists', $this->getUserPlaylists());
-    }
-
-    /**
      * Renders getUserTopTracks
      * @see getUserTopTracks
      * @param string $term
@@ -192,15 +182,5 @@ class MainController extends AppController
         $this->set('track', $currentSong['item']);
         $this->set('playing', true);
         $this->render('/element/song');  
-    }
-
-    /**
-     * Get a list of all playlists owned or followed by the current Spotify user.
-     * 
-     * @return array
-     */
-    public function getUserPlaylists()
-    {
-        return $this->getApi()->getAllPlaylists();
     }
 }
