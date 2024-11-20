@@ -28,8 +28,8 @@
 </div>
 <script>
     $(function () {
-        $('div.top select').on('change', function () {
-            let variant = $(this).closest('div.top').hasClass('top-tracks') ? 'tracks' : 'artists';
+        $('div.list select').on('change', function () {
+            let variant = $(this).closest('div.list').hasClass('top-tracks') ? 'tracks' : 'artists';
             loader('div#' + variant);
             let div = $(this).closest('div.top-' + variant);
             $.ajax({
