@@ -3,47 +3,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Utility\SpotifyApi;
+
 use Cake\Cache\Cache;
 
 class MainController extends AppController
 {
-    /**
-     * Spotify API Object
-     * @var \App\Utility\SpotifyApi
-     */
-    private $_api;
-
-    public function initialize(): void
-    {
-        parent::initialize();
-        $this->_api = new SpotifyApi(env('CLIENT_ID'), env('CLIENT_SECRET'), env('REDIRECT_URI'));
-    }
-
-    /**
-     * 
-     * @param \Cake\Event\EventInterface $event
-     * @return \Cake\Http\Response|null
-     */
-    public function beforeFilter(\Cake\Event\EventInterface $event)
-    {
-        if(!in_array($this->getRequest()->getParam('action'), ['login', 'logout']))
-        {
-            // Redirect to login screen if not logged in
-            if(!$this->getRequest()->getSession()->check('user'))
-                return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
-
-            // Set tokens
-            if(!$this->getApi()->checkTokens())
-                $this->getApi()->setTokensOfUser($this->getRequest()->getSession()->read('user')->access_token, $this->getRequest()->getSession()->read('user')->refresh_token);
-        
-            // Get current or last played song
-            $this->set('user', $this->getRequest()->getSession()->read('user'));
-            $this->set('current_song', $this->getApi()->getCurrentlyPlaying());
-        }
-
-        
-    }
     /**
      * Request authorization from the user and redirect to corresponding page
      * 
@@ -74,16 +38,6 @@ class MainController extends AppController
 
         // Redirect to login through Spotify - returns Authorization Code
         return $this->redirect($this->getApi()->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['user-top-read', 'user-read-currently-playing', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
-    }
-
-    /**
-     * Get API Object
-     * 
-     * @return SpotifyApi
-     */
-    public function getApi()
-    {
-        return $this->_api;
     }
 
     /**
