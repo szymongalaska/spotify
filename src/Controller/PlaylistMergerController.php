@@ -15,6 +15,7 @@ class PlaylistMergerController extends AppController
     public function index()
     {
         $this->set('myPlaylists', $this->getUserPlaylists());
+        $this->set('myOwnPlaylists', $this->getUserOwnPlaylists());
     }
 
     /**
@@ -25,5 +26,10 @@ class PlaylistMergerController extends AppController
     public function getUserPlaylists()
     {
         return $this->getApi()->getAllPlaylists();
+    }
+
+    public function getUserOwnPlaylists()
+    {
+        return $this->getApi()->getOwnedPlaylists($this->getRequest()->getSession()->read('user')['spotify_id']);
     }
 }

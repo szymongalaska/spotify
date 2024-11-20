@@ -12,3 +12,15 @@ msgstr "Ulubieni wykonawcy"
 
 msgid "Your playlists"
 msgstr "Twoje playlisty"
+
+msgid "Merge multiple playlists into one. Target playlist must be your own."
+msgstr "Scal wiele playlist w jedną. Docelowa playlist musi być utworzona przez Ciebie."
+
+msgid "Select source playlists"
+msgstr "Wybierz playlisty źródłowe"
+
+msgid "Select target playlist"
+msgstr "Wybierz playlistę docelową"
+
+msgid "Submit"
+msgstr "Potwierdź"

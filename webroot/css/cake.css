@@ -46,6 +46,21 @@ input[type='submit'] {
     border-color: var(--color-green);
 }
 
+.button:focus,
+.button:hover,
+button:focus,
+button:hover,
+input[type='button']:focus,
+input[type='button']:hover,
+input[type='reset']:focus,
+input[type='reset']:hover,
+input[type='submit']:focus,
+input[type='submit']:hover {
+    background-color: var(--color-black);
+    border-color: var(--color-green-light);
+    color: #fff;
+}
+
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 400;
@@ -471,6 +486,11 @@ div.playlists ul li:hover {
     background-color: var(--color-green);
 }
 
+div.playlists ul li.selected
+{
+    background-color: var(--color-green-light);
+}
+
 div.playlists ul li {
     padding: 0.5rem;
     border-radius: var(--border-radius);
@@ -489,4 +509,29 @@ div.content ul
     max-height: 100vh;
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+.hidden
+{
+    display: none;
+}
+
+div.content.list.playlists
+{
+    width: 45%;
+}
+
+div.content.list.playlists ul
+{
+    max-height: 35rem;
+}
+
+div.playlists-container
+{
+    display:flex;
+}
+
+div.playlistMerger input[type="submit"]
+{
+    width: 100%;
 }

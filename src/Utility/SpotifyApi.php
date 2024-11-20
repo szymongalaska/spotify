@@ -76,6 +76,18 @@ class SpotifyApi
     private bool $_retry = false;
 
     /**
+     * Counter of request retries
+     * @var int
+     */
+    private $_retryCount;
+
+    /**
+     * Number of max request retries
+     * @var int
+     */
+    const MAX_RETRY_NUMBER = 3;
+
+    /**
      * Constructor
      * 
      * @param string $clientId
@@ -156,7 +168,7 @@ class SpotifyApi
 
         $this->_setAccessToken($response['access_token']);
 
-        if($response['refresh_token'])
+        if(isset($response['refresh_token']))
             $this->_setRefreshToken($response['refresh_token']);
     }
 
@@ -184,12 +196,13 @@ class SpotifyApi
      * @param string $time_range Over what time frame the affinities are computed. Valid values: long_term (calculated from ~1 year of data and including all new data as it becomes available), medium_term (approximately last 6 months), short_term (approximately last 4 weeks). Default: medium_term
      * @param int $limit The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
      * @param int $offset The index of the first item to return. Default: 0 (the first item). Use with limit to get the next set of items.
+     * @throws \Exception Thrown when unsupported type
      * @return array
      */
     public function getTop(string $type, string $time_range = 'medium_term', int $limit = 20, int $offset = 0) :array
     {
         if(!in_array($type, ['artists', 'tracks']))
-            return null;
+            throw new \Exception('Not supported type.');
 
         return $this->_request('GET', self::API_URL.'/v1/me/top/'.$type, ['time_range' => $time_range, 'limit' => $limit, 'offset' => $offset]);
     }
@@ -256,6 +269,21 @@ class SpotifyApi
     }
 
     /**
+     * Get a list of all playlists owned by the current Spotify user.
+     * @param int $ownerId Need to compare with playlist owner ID
+     * @return array
+     */
+    public function getOwnedPlaylists(int $ownerId)
+    {
+        $playlists = $this->getAllPlaylists();
+
+        return array_filter($playlists, function($playlist) use ($ownerId){
+            if($playlist['owner']['id'] == $ownerId)
+                return $playlist;
+        });
+    }
+
+    /**
      * Batch retrieve all data from any given URL which returns 'next' url (eg. Playlists)
      * @param string $url URL used in request
      * @param string $method Method used in request. GET or POST. Default GET
@@ -306,22 +334,27 @@ class SpotifyApi
      */
     private function _request(string $method, string $url, array $data = [])
     {
-        try{
-            $result = $this->_send($method, $url, $data);
-        }
-        catch(\Exception $e){
-            if($this->shouldRetry())
+        do{
+            try{
                 $result = $this->_send($method, $url, $data);
-
-            throw $e;
+            }
+            catch(\Exception $e){
+                if(!$this->shouldRetry())
+                    throw $e;
+            };
         }
-
+        while($this->shouldRetry());
+        
         $this->_clearOptions();
 
-        if($result->getStatusCode() === 200)
+        if($result->getStatusCode() === 200);
             return $result->getJson();
     }
 
+    /**
+     * Clears options and headers param
+     * @return void
+     */
     private function _clearOptions()
     {
         $this->_options = [];
@@ -406,12 +439,13 @@ class SpotifyApi
      */
     private function _handleError(\Cake\Http\Client\Response $response)
     {
+
         if($response->getStatusCode() === 401)
         {
-            if($this->_refreshTokens())
+            if($this->_refreshTokens()){
                 $this->retry();
-            else
                 throw new \Exception('Access revoked. Please login');
+            }
         }
         else if($response->getStatusCode() === 429)
             {
@@ -434,9 +468,21 @@ class SpotifyApi
         $this->_accessToken = $accessToken;
     }
 
+    /**
+     * Sets retry value and increments counter of retries. Throws exception when limit of retries reached
+     * @throws \Exception
+     * @return void
+     */
     public function retry()
-    {
+    {   
         $this->_retry = true;
+        $this->_retryCount++;
+
+        if($this->_retryCount > self::MAX_RETRY_NUMBER)
+        {
+            $this->_retry = false;
+            throw new \Exception('Max request retries reached.');
+        }
     }
 
     /**

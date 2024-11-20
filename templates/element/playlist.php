@@ -3,8 +3,8 @@
  * @var \App\View\AppView $this
  */
 ?>
-<div class="row playlist">
-    <div class="image-column column column-10">
+<div class="row playlist" data-id="<?= $playlist['id'] ?>">
+    <div class="image-column column column-25">
     <?php if($playlist['images']): ?>
         <?= $this->Html->image($playlist['images'][0]['url'], ['alt' => $playlist['name']]) ?>
     <?php else: ?>
