@@ -51,3 +51,12 @@ msgstr "Playlisty są już scalone"
 
 msgid "There was a problem while merging playlist"
 msgst "Wystąpił błąd podczas scalania playlist"
+
+msgid "Access revoked. Please login."
+msgstr "Brak dostępu. Zaloguj się ponownie."
+
+msgid "Too many requests. Wait for {0} seconds."
+msgstr "Przekroczono limit zapytań. Poczekaj {} sekund."
+
+msgid "Spotify API is currently unavailable. Try again later."
+msgstr "Spotify API jest obecnie niedostępne. Spróbuj później."

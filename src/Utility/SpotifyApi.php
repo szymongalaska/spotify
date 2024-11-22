@@ -457,32 +457,37 @@ class SpotifyApi
     }
 
     /**
-     * Summary of _handleError
+     * Handles error based on the response status code
+     * 
      * @param \Cake\Http\Client\Response $response
+     * @throws \Exception
      * @return void
      */
     private function _handleError(\Cake\Http\Client\Response $response)
     {
-
-        if($response->getStatusCode() === 401)
-        {
-            if($this->_refreshTokens())
-                $this->retry();
-            else
-                throw new \Exception('Access revoked. Please login');
-        }
-        else if($response->getStatusCode() === 429)
-            {
+        switch ($response->getStatusCode()) {
+            case 401:
+                if ($this->_refreshTokens())
+                    $this->retry();
+                else
+                    throw new \Exception(__('Access revoked. Please login.'));
+                break;
+            case 429:
                 $sleep = (int) $response->getHeader('retry-after')[0];
-                
-                if($sleep >= 30)
-                    throw new \Exception("Too many requests. Wait for {$sleep} seconds.");
+
+                if ($sleep >= 30)
+                    throw new \Exception(__("Too many requests. Wait for {0} seconds.", $sleep));
 
                 sleep($sleep);
                 $this->retry();
-            }
-        else
-            throw new \Exception($response->getStatusCode().' - '.$response->getReasonPhrase());
+                break;
+            case 503:
+                throw new \Exception(__('Spotify API is currently unavailable. Try again later.'));
+            break;
+            default:
+                throw new \Exception(message: $response->getStatusCode() . ' - ' . $response->getReasonPhrase());
+            break;
+        }
     }
 
     /**
