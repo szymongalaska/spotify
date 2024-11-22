@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Utility;
 
 use Cake\Http\Client;
-use Cake\Http\Exception\BadRequestException;
+use InvalidArgumentException;
 
 class SpotifyApi
 {
@@ -79,7 +79,7 @@ class SpotifyApi
      * Counter of request retries
      * @var int
      */
-    private $_retryCount;
+    private $_retryCount = 0;
 
     /**
      * Number of max request retries
@@ -287,21 +287,44 @@ class SpotifyApi
      * Batch retrieve all data from any given URL which returns 'next' url (eg. Playlists)
      * @param string $url URL used in request
      * @param string $method Method used in request. GET or POST. Default GET
+     * @param string $path Dot-notated path
      * @return array
      */
-    private function _batchRetrieveData(string $url, string $method = 'GET')
+    private function _batchRetrieveData(string $url, string $method = 'GET', string $path = '')
     {
         $items = [];
         
         do
         {
             $response = $this->_request($method, $url);
+
+            if($path !== '')
+                $response = $this->_getValueByPath($response, $path);
+
             $url = $response['next'];
             $items = array_merge($items, $response['items']);
         }
         while(!empty($response['next']));
 
         return $items;
+    }
+
+    /**
+     * Helper function to retrieve a value from a nested array using a dot-notated path.
+     * @param array $array Source array
+     * @param string $path Dot-notated path (e.g. 'tracks.items')
+     * @return mixed
+     */
+    private function _getValueByPath(array $array, string $path)
+    {
+        $keys = explode('.', $path);
+        foreach ($keys as $key) {
+            if (!is_array($array) || !array_key_exists($key, $array)) {
+                return null;
+            }
+            $array = $array[$key];
+        }
+        return $array;
     }
 
     /**
@@ -329,10 +352,10 @@ class SpotifyApi
      * Handles requests
      * @param string $method
      * @param string $url
-     * @param array $data
-     * @return mixed
+     * @param array|string $data
+     * @return array
      */
-    private function _request(string $method, string $url, array $data = [])
+    private function _request(string $method, string $url, array|string $data = [])
     {
         do{
             try{
@@ -380,11 +403,11 @@ class SpotifyApi
      * 
      * @param string $method GET/POST
      * @param string $url URL to the endpoint after API_URL
-     * @param array $data Optional. Data to send with request
+     * @param array|string $data Optional. Data to send with request
      * 
      * @return \Cake\Http\Client\Response
      */
-    private function _send(string $method, string $url, array $data = [])
+    private function _send(string $method, string $url, array|string $data = [])
     {
         $this->_setOptions();
 
@@ -392,6 +415,7 @@ class SpotifyApi
         {
             'GET' => $this->getClient()->get($url, $data, $this->_options),
             'POST' => $this->getClient()->post($url, $data, $this->_options),
+            'DELETE' => $this->getClient()->delete($url, $data, $this->_options),
         };
 
         if($response->getStatusCode() >= 400)
@@ -442,14 +466,19 @@ class SpotifyApi
 
         if($response->getStatusCode() === 401)
         {
-            if($this->_refreshTokens()){
+            if($this->_refreshTokens())
                 $this->retry();
+            else
                 throw new \Exception('Access revoked. Please login');
-            }
         }
         else if($response->getStatusCode() === 429)
             {
-                sleep((int) $response->getHeader('retry-after'));
+                $sleep = (int) $response->getHeader('retry-after')[0];
+                
+                if($sleep >= 30)
+                    throw new \Exception("Too many requests. Wait for {$sleep} seconds.");
+
+                sleep($sleep);
                 $this->retry();
             }
         else
@@ -555,5 +584,149 @@ class SpotifyApi
     public function getClientSecret()
     {
         return $this->_clientSecret;
+    }
+
+    /**
+     * Get a playlist owned by a Spotify user.
+     * @param string $playlistId The Spotify ID of the playlist.
+     * @param string $fields Optional. Filters for the query: a comma-separated list of the fields to return. If omitted, all fields are returned. For example, to get just the playlist''s description and URI: fields=description,uri. A dot separator can be used to specify non-reoccurring fields, while parentheses can be used to specify reoccurring fields within objects. For example, to get just the added date and user ID of the adder: fields=tracks.items(added_at,added_by.id). Use multiple parentheses to drill down into nested objects, for example: fields=tracks.items(track(name,href,album(name,href))). Fields can be excluded by prefixing them with an exclamation mark, for example: fields=tracks.items(track(name,href,album(!name,href)))
+     * @return array
+     */
+    public function getPlaylist(string $playlistId, string $fields = '')
+    {
+        $options = $fields !== '' ? ['fields' => $fields] : [];
+        
+        return $this->_request('GET', self::API_URL.'/v1/playlists/'.$playlistId, $options);
+    }
+
+    /**
+     * Get snapshot ID of a playlist.
+     * @param string $playlistId The Spotify ID of the playlist.
+     * @return string
+     */
+    public function getPlaylistSnapshotId(string $playlistId)
+    {
+        return $this->getPlaylist($playlistId, 'snapshot_id')['snapshot_id'];
+    }
+
+    /**
+     * Get full details of the items of a playlist owned by a Spotify user.
+     * @param string $playlistId The Spotify ID of the playlist.
+     * @param string $fields Optional. Filters for the query: a comma-separated list of the fields to return. If omitted, all fields are returned. For example, to get just the playlist''s description and URI: fields=description,uri. A dot separator can be used to specify non-reoccurring fields, while parentheses can be used to specify reoccurring fields within objects. For example, to get just the added date and user ID of the adder: fields=tracks.items(added_at,added_by.id). Use multiple parentheses to drill down into nested objects, for example: fields=tracks.items(track(name,href,album(name,href))). Fields can be excluded by prefixing them with an exclamation mark, for example: fields=tracks.items(track(name,href,album(!name,href)))
+     * @return array
+     */
+    public function getPlaylistTracks(string $playlistId, string $fields = '')
+    {
+        $options = $fields !== '' ? ['fields' => 'next, items('.$fields.')'] : [];
+        
+        $url = $this->getClient()->buildUrl(self::API_URL.'/v1/playlists/'.$playlistId.'/tracks', $options);
+
+        return $this->_batchRetrieveData($url, 'GET');
+    }
+
+    
+    /**
+     * Modify playlist according to method parameter
+     * 
+     * @param string $method HTTP method (POST for add, DELETE for remove)
+     * @param string $playlistId The Spotify ID of the playlist.
+     * @param array $tracks Array of track URIs
+     * 
+     * @param array $options Optional. Can be:
+     * 
+     * - prepend - Prepends tracks to the playlist
+     * 
+     * @throws \InvalidArgumentException 
+     * @return bool|null
+     */
+    private function _modifyPlaylistTracks(string $method, string $playlistId, array $tracks, array $options = [])
+    {
+        if (empty($tracks))
+            throw new InvalidArgumentException('Tracks array cannot be empty.');
+
+        $this->_addOptions(['type' => 'json']);
+
+        if ($method === 'DELETE') {
+
+            $tracks = array_map(function ($track) {
+                return ['uri' => $track];
+            }, $tracks);
+
+            $snapshot_id = $this->getPlaylistSnapshotId($playlistId);
+        }
+
+        $tracks = array_chunk($tracks, 100);
+
+
+        foreach ($tracks as $data) {
+
+            if ($method === 'DELETE')
+                $data = [
+                    'tracks' => $data,
+                    'snapshot_id' => $snapshot_id,
+                ];
+            else
+                $data = ['uris' => $data];
+
+            if (isset($options['prepend']) && ($options['prepend']) === true)
+                $data['position'] = 0;
+
+            $this->_request($method, self::API_URL . '/v1/playlists/' . $playlistId . '/tracks', json_encode($data));
+        }
+
+
+        return true;
+    }
+
+    /**
+     * Add tracks to playlist
+     * @param string $playlistId The Spotify ID of the playlist.
+     * @param array $tracks Array of track URIs
+     * @param bool $prepend If set to true will prepend tracks to the playlist
+     * @return bool|null
+     */
+    public function addTracksToPlaylist(string $playlistId, array $tracks, bool $prepend = false)
+    {
+        $options['prepend'] = $prepend;
+        return $this->_modifyPlaylistTracks('POST', $playlistId, $tracks, $options);
+    }
+
+    /**
+     * Delete tracks from playlist
+     * @param string $playlistId The Spotify ID of the playlist.
+     * @param array $tracks Array of track URIs
+     * @return bool|null
+     */
+    public function deleteTracksFromPlaylist(string $playlistId, array $tracks)
+    {
+        return $this->_modifyPlaylistTracks('DELETE', $playlistId, $tracks);
+    }
+
+    /**
+     * Get Spotify catalog information for a single track identified by its unique Spotify ID.
+     * @param string $trackId The Spotify ID for the track.
+     * @return array
+     */
+    public function getTrack(string $trackId)
+    {
+        return $this->_request('GET', self::API_URL.'/v1/tracks/'.$trackId);
+    }
+
+    /**
+     * Get Spotify catalog information for multiple tracks based on their Spotify IDs. 
+     * @param array $tracks Array of track IDs
+     * @return array
+     */
+    public function getMultipleTracks(array $tracks)
+    {
+        $tracks = array_chunk($tracks, 50);
+        $result = [];
+
+        foreach($tracks as $chunk)
+        {
+            $result = array_merge($result, $this->_request('GET', self::API_URL.'/v1/tracks/', ['ids' => implode(',', $chunk)])['tracks']);
+        }
+        
+        return $result;
     }
 }

@@ -12,7 +12,7 @@ use Cake\ORM\Entity;
  * @property int $user_id
  * @property string $source_playlists
  * @property string $target_playlist_id
- * @property string|null $target_playlist_last_snapshot
+ * @property string|null $options
  *
  * @property \App\Model\Entity\User $user
  */
@@ -31,7 +31,7 @@ class PlaylistMerger extends Entity
         'user_id' => true,
         'source_playlists' => true,
         'target_playlist_id' => true,
-        'target_playlist_last_snapshot' => true,
+        'options' => true,
         'user' => true,
     ];
 }

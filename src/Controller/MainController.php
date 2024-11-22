@@ -122,17 +122,6 @@ class MainController extends AppController
     }
 
     /**
-     * Retrieve users saved tracks and save it to cache or retrieve if cache already exists
-     * @return array
-     */
-    public function getUserSavedTracks()
-    {
-        return Cache::remember($this->getRequest()->getSession()->read('user')['id'].'-savedTracks', function(){
-            return $this->getApi()->getAllSavedTracks();
-        }, '_spotify_');
-    }
-
-    /**
      * Logout user by deleting session data
      * @return \Cake\Http\Response|null
      */

@@ -18,6 +18,7 @@ namespace App\Controller;
 
 use App\Utility\SpotifyApi;
 use Cake\Controller\Controller;
+use Cake\Cache\Cache;
 
 /**
  * Application Controller
@@ -33,7 +34,7 @@ class AppController extends Controller
      * Spotify API Object
      * @var \App\Utility\SpotifyApi
      */
-    protected $_api;
+    private $_api;
     /**
      * Initialization hook method.
      *
@@ -85,8 +86,30 @@ class AppController extends Controller
      * 
      * @return SpotifyApi
      */
-    public function getApi()
+    protected function getApi()
     {
         return $this->_api;
+    }
+
+    /**
+     * Helper function for making cache keys
+     * @param array $values Values to create key from
+     * @return string
+     */
+    public function makeCacheKey(array $values)
+    {
+        return implode('-', $values);
+    }
+
+    /**
+     * Retrieve users saved tracks and save it to cache or retrieve if cache already exists
+     * @return array
+     */
+    protected function getUserSavedTracks()
+    {
+        $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'],'savedTracks']);
+        return Cache::remember($cacheKey, function(){
+            return $this->getApi()->getAllSavedTracks();
+        }, '_spotify_');
     }
 }

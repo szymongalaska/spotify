@@ -24,3 +24,30 @@ msgstr "Wybierz playlistę docelową"
 
 msgid "Submit"
 msgstr "Potwierdź"
+
+msgid "There was an error while saving playlists"
+msgstr "Wystąpił błąd podczas zapisu playlist"
+
+msgid "Playlists merged successfully"
+msgstr "Pomyślnie scalono playlisty"
+
+msgid "Login"
+msgstr "Zaloguj się"
+
+msgid "Logout"
+msgstr "Wyloguj się"
+
+msgid "Login to continue"
+msgstr "Zaloguj się aby kontynuować"
+
+msgid "Include only songs added to the library (Saved Tracks)"
+msgstr "Uwzględnij tylko piosenki dodane do biblioteki (Polubione)"
+
+msgid "Add newest songs on top of playlist"
+msgstr "Dodawaj najnowsze piosenki na początek playlisty"
+
+msgid "Playlists are already merged"
+msgstr "Playlisty są już scalone"
+
+msgid "There was a problem while merging playlist"
+msgst "Wystąpił błąd podczas scalania playlist"
