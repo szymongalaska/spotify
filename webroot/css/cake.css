@@ -67,13 +67,11 @@ body {
     background: var(--color-main-bg);
 }
 
-::-webkit-scrollbar
-{
+::-webkit-scrollbar {
     width: 1rem;
 }
 
-::-webkit-scrollbar-thumb
-{
+::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 1rem;
 }
@@ -409,6 +407,7 @@ img.top-nav-profile-picture {
     display: flex;
     align-items: center;
     gap: 1rem;
+    justify-content: flex-end;
 }
 
 .top-nav-user span {
@@ -416,7 +415,7 @@ img.top-nav-profile-picture {
 
 }
 
-div.list > div.row {
+div.list>div.row {
     justify-content: space-between;
     padding: 0 2rem;
 }
@@ -486,8 +485,7 @@ div.playlists ul li:hover {
     background-color: var(--color-green);
 }
 
-div.playlists ul li.selected
-{
+div.playlists ul li.selected {
     background-color: var(--color-green-light);
 }
 
@@ -497,54 +495,45 @@ div.playlists ul li {
     cursor: pointer;
 }
 
-div.image-column
-{
-    display:flex !important;
+div.image-column {
+    display: flex !important;
     justify-content: center;
     align-items: center;
 }
 
-div.content ul
-{
+div.content ul {
     max-height: 100vh;
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-.hidden
-{
+.hidden {
     display: none;
 }
 
-div.content.list.playlists
-{
+div.content.list.playlists {
     width: 45%;
 }
 
-div.content.list.playlists ul
-{
+div.content.list.playlists ul {
     max-height: 35rem;
 }
 
-div.playlists-container
-{
-    display:flex;
+div.playlists-container {
+    display: flex;
     justify-content: center;
 }
 
-div.playlistMerger input[type="submit"]
-{
+div.playlistMerger input[type="submit"] {
     width: 100%;
 }
 
-p.description
-{
+p.description {
     text-align: center;
     vertical-align: middle;
 }
 
-div.playlist-header
-{
+div.playlist-header {
     padding: 2rem;
     border-radius: var(--border-radius);
     background-color: #393939;
@@ -553,16 +542,44 @@ div.playlist-header
     color: #dedede;
 }
 
-div.playlist-header h1, h2, h3, h4, h5, h6
-{
+div.playlist-header h1,
+div.playlist-header h2,
+div.playlist-header h3,
+div.playlist-header h4,
+div.playlist-header h5,
+div.playlist-header h6 {
     margin-bottom: 0;
     font-size: 5rem;
     color: #fff;
-    font-weight:800;
+    font-weight: 800;
 }
 
-div.playlist-header img
-{
+div.playlist-header img {
     width: auto;
     height: auto;
+}
+
+nav.top-nav>div {
+    width: 33%;
+}
+
+nav.top-nav
+{
+    font-family: "Raleway", sans-serif;
+}
+
+.top-nav-links
+{
+    display: flex;
+    justify-content: center;
+}
+
+.top-nav-links a:hover
+{
+    color: var(--color-green);
+}
+
+.top-nav-links a i
+{
+    font-size: 2rem;
 }

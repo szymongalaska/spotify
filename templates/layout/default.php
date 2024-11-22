@@ -34,10 +34,14 @@
 </head>
 <body>
     <nav class="top-nav">
-        <div class="top-nav-links" id="current-song" style="width: 35%;">
+        <div id="current-song">
             <?php if($current_song): ?>
                 <?php echo $this->element('song', ['track' => $current_song['item'], 'playing' => true]) ?>
             <?php endif; ?>
+        </div>
+        <div class="top-nav-links">
+            <?= $this->Html->link('<i class="fa fa-home"></i>', ['controller' => 'Main', 'action' => 'dashboard'], ['escape' => false]) ?>
+            <?= $this->Html->link('<i class="fa fa-list"></i>', ['controller' => 'Playlist', 'action' => 'view'], ['escape' => false]) ?>
         </div>
         <div class="top-nav-user">
                 <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
