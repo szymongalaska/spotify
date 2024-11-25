@@ -4,6 +4,10 @@ declare(strict_types=1);
 namespace App\Utility;
 
 use Cake\Http\Client;
+use Cake\Http\Exception\BadRequestException;
+use Cake\Http\Exception\HttpException;
+use Cake\Http\Exception\ServiceUnavailableException;
+use Cake\Http\Exception\UnauthorizedException;
 use InvalidArgumentException;
 
 class SpotifyApi
@@ -456,11 +460,18 @@ class SpotifyApi
         $this->_headers = array_merge($this->_headers, $headers);
     }
 
+
     /**
+     * 
      * Handles error based on the response status code
      * 
      * @param \Cake\Http\Client\Response $response
-     * @throws \Exception
+     * 
+     * @throws \Cake\Http\Exception\UnauthorizedException
+     * @throws \Cake\Http\Exception\HttpException
+     * @throws \Cake\Http\Exception\ServiceUnavailableException
+     * @throws \Cake\Http\Exception\BadRequestException
+     * 
      * @return void
      */
     private function _handleError(\Cake\Http\Client\Response $response)
@@ -470,22 +481,24 @@ class SpotifyApi
                 if ($this->_refreshTokens())
                     $this->retry();
                 else
-                    throw new \Exception(__('Access revoked. Please login.'));
+                    throw new UnauthorizedException(__('Access revoked. Please login.'));
                 break;
             case 429:
                 $sleep = (int) $response->getHeader('retry-after')[0];
 
                 if ($sleep >= 30)
-                    throw new \Exception(__("Too many requests. Wait for {0} seconds.", $sleep));
+                    throw new HttpException(__("Too many requests. Wait for {0} seconds.", $sleep), 429);
 
                 sleep($sleep);
                 $this->retry();
                 break;
             case 503:
-                throw new \Exception(__('Spotify API is currently unavailable. Try again later.'));
+                throw new ServiceUnavailableException(__('Spotify API is currently unavailable. Try again later.'));
             break;
+            case 400:
+                throw new BadRequestException();
             default:
-                throw new \Exception(message: $response->getStatusCode() . ' - ' . $response->getReasonPhrase());
+                throw new HttpException($response->getStatusCode() . ' - ' . $response->getReasonPhrase(), $response->getStatusCode());
             break;
         }
     }

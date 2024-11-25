@@ -1,6 +1,7 @@
 <?php
 /**
  * @var \App\View\AppView $this
+ * @var array $playlist Playlist array with tracks
  */
 ?>
 <div class="playlist">

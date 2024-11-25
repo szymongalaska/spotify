@@ -4,20 +4,37 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Cake\Cache\Cache;
+use Cake\Http\Exception\BadRequestException;
 
 class PlaylistController extends AppController
 {
 
     /**
-     * View playlist
+     * Render playlist content view
      * @param string $playlistId The Spotify ID of playlist
      * @return \Cake\Http\Response|null
      */
     public function view(string $playlistId)
     {
-        $playlist = $this->getApi()->getPlaylist($playlistId);
-        $playlist['tracks'] = $this->getApi()->getPlaylistTracks($playlistId);
-        $this->set(compact('playlist'));
+        try{
+            $playlist = $this->getApi()->getPlaylist($playlistId);
+            $playlist['tracks'] = $this->getApi()->getPlaylistTracks($playlistId);
+            $this->set(compact('playlist'));
+        }
+        catch(BadRequestException $e)
+        {   
+            $this->Flash->error(__("Failed to find the playlist with the given ID. Please make sure the ID is correct and the playlist is not private."));
+            return $this->redirect(['action' => 'find']);
+        }
+    }
+
+    /**
+     * Render playlist find view
+     * @return void
+     */
+    public function find()
+    {
+        $this->set('playlists', $this->getUserPlaylists());
     }
 
 

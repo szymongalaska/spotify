@@ -60,3 +60,9 @@ msgstr "Przekroczono limit zapytań. Poczekaj {} sekund."
 
 msgid "Spotify API is currently unavailable. Try again later."
 msgstr "Spotify API jest obecnie niedostępne. Spróbuj później."
+
+msgid "You can select a playlist from the list to preview it or enter any playlist ID to view its contents. Please note that large playlists may take longer to load."
+msgstr "Wybierz playlistę by ją podejrzeć lub wprowadź ID playlisty by sprawdzić jej zawartość. Pamiętaj, że duże playlisty mogą ładować się dłużej.
+
+msgid "Failed to find the playlist with the given ID. Please make sure the ID is correct and the playlist is not private."
+msgstr "Nie udało się znaleźć playlisty o podanym ID. Upewnij się, że ID jest poprawne i playlista nie jest prywatna."

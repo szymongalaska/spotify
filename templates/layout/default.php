@@ -40,14 +40,14 @@
             <?php endif; ?>
         </div>
         <div class="top-nav-links">
-            <?= $this->Html->link('<i class="fa fa-home"></i>', ['controller' => 'Main', 'action' => 'dashboard'], ['escape' => false]) ?>
-            <?= $this->Html->link('<i class="fa fa-list"></i>', ['controller' => 'Playlist', 'action' => 'view'], ['escape' => false]) ?>
+            <?= $this->Html->link('<span class="material-symbols-outlined">home</span>', ['controller' => 'Main', 'action' => 'dashboard'], ['escape' => false]) ?>
+            <?= $this->Html->link('<span class="material-symbols-outlined">queue_music</span>', ['controller' => 'Playlist', 'action' => 'find'], ['escape' => false]) ?>
         </div>
         <div class="top-nav-user">
                 <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
                 <span><?= h($this->getRequest()->getSession()->read('user')['display_name']); ?></span>
             <div class="top-nav-links">
-                <?= $this->Html->link('<i class="fa fa-right-from-bracket"></i>', ['controller' => 'Main', 'action' => 'logout'], ['escape' => false]); ?>
+                <?= $this->Html->link('<span class="material-symbols-outlined">logout</span>', ['controller' => 'Main', 'action' => 'logout'], ['escape' => false]); ?>
             </div>
         </div>
     </nav>

@@ -4,7 +4,7 @@
  */
 ?>
 <div class="row playlist" data-id="<?= $playlist['id'] ?>">
-    <div class="image-column column column-25">
+    <div class="image-column column <?php echo $column ?? 'column-25'?>">
         <?php if ($playlist['images']): ?>
             <?= $this->Html->image($playlist['images'][0]['url'], ['alt' => $playlist['name']]) ?>
         <?php else: ?>

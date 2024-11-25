@@ -37,6 +37,22 @@
     --color-message-info-border: #6cb2eb;
 }
 
+.material-symbols-outlined
+{
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 3rem;  /* Preferred icon size */
+  display: inline-block;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  font-variation-settings: 'FILL' 1;
+}
+
+
 .button,
 button,
 input[type='button'],
@@ -469,12 +485,22 @@ div.content {
 }
 
 i.fa.fa-music {
-    width: 64px;
-    height: 64px;
     font-size: 44px;
     padding: 1rem;
     background: var(--color-black);
     color: var(--color-green);
+}
+
+div.column-25 i.fa.fa-music
+{
+    width: 64px;
+    height: 64px;
+}
+
+div.column-10 i.fa.fa-music
+{
+    width: 44px;
+    height: 44px;
 }
 
 div.content ul {
@@ -511,7 +537,7 @@ div.content ul {
     display: none;
 }
 
-div.content.list.playlists {
+div.playlistMerger div.content.list.playlists {
     width: 45%;
 }
 
@@ -563,23 +589,55 @@ nav.top-nav>div {
     width: 33%;
 }
 
-nav.top-nav
-{
+nav.top-nav {
     font-family: "Raleway", sans-serif;
 }
 
-.top-nav-links
-{
+.top-nav-links {
     display: flex;
     justify-content: center;
 }
 
-.top-nav-links a:hover
-{
+.top-nav-links a:hover {
     color: var(--color-green);
 }
 
-.top-nav-links a i
-{
+.top-nav-links a i {
     font-size: 2rem;
+}
+
+div.playlists ul li a {
+    all: unset;
+}
+
+div.playlists form div.submit {
+    display: flex;
+    justify-content: center;
+}
+
+p.description {
+    background: #f3f3f3;
+    padding: 2rem;
+    border: 1px solid #c9c9c9;
+    font-size: 1.25rem;
+    text-align: center;
+}
+
+input[type='color']:focus,
+input[type='date']:focus,
+input[type='datetime']:focus,
+input[type='datetime-local']:focus,
+input[type='email']:focus,
+input[type='month']:focus,
+input[type='number']:focus,
+input[type='password']:focus,
+input[type='search']:focus,
+input[type='tel']:focus,
+input[type='text']:focus,
+input[type='url']:focus,
+input[type='week']:focus,
+input:not([type]):focus,
+textarea:focus,
+select:focus {
+    border-color: var(--color-green-light);
 }
