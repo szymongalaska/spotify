@@ -115,9 +115,13 @@ class PlaylistMergerController extends PlaylistController
 
             $resultAdd = $this->_addTracksToPlaylist($entity->target_playlist_id, $tracksToAdd);
         }
+        else
+            $resultAdd = true;
 
         if(!empty($tracksToRemove))
             $resultRemove = $this->_deleteTracksFromPlaylist($entity->target_playlist_id, $tracksToRemove);
+        else
+            $resultRemove = true;
 
 
         if(empty($tracksToAdd) && empty($tracksToRemove))
