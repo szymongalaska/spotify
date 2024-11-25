@@ -3,13 +3,12 @@
  * @var \App\View\AppView $this
  */
 ?>
-<?php if($track['is_local'] == false): ?>
 <div class="row song" data-id="<?= $track['id'] ?>">
     <div class="image-column column <?php echo isset($playing) && $playing == true ? 'column-20' : 'column-10' ?>">
     <?php if($track['album']['images']): ?>
         <?= $this->Html->image($track['album']['images'][0]['url'], ['alt' => $track['album']['name']]) ?>
     <?php else: ?>
-        <i class="fa fa-music"></i>
+        <span class="material-symbols-outlined library-music">play_circle</span>
     <?php endif; ?>
     </div>
     <div class="column" style="display: flex; flex-direction: column; justify-content: center">
@@ -27,4 +26,3 @@
         </div>
     </div>
 </div>
-<?php endif; ?>

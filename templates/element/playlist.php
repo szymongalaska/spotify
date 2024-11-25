@@ -8,7 +8,7 @@
         <?php if ($playlist['images']): ?>
             <?= $this->Html->image($playlist['images'][0]['url'], ['alt' => $playlist['name']]) ?>
         <?php else: ?>
-            <i class="fa fa-music"></i>
+            <span class="material-symbols-outlined library-music">library_music</span>
         <?php endif; ?>
     </div>
     <div class="column" style="display: flex; flex-direction: column; justify-content: center">

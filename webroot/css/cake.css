@@ -10,7 +10,7 @@
     --color-green-light: #1ED760;
 
     --color-black: #121212;
-
+    --color-dark-bg: #393939;
     /* These are additional colors */
     --color-lightgray: #606c76;
     --color-white: #fff;
@@ -37,19 +37,19 @@
     --color-message-info-border: #6cb2eb;
 }
 
-.material-symbols-outlined
-{
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 3rem;  /* Preferred icon size */
-  display: inline-block;
-  text-transform: none;
-  letter-spacing: normal;
-  word-wrap: normal;
-  white-space: nowrap;
-  direction: ltr;
-  font-variation-settings: 'FILL' 1;
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 3rem;
+    /* Preferred icon size */
+    display: inline-block;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    font-variation-settings: 'FILL' 1;
 }
 
 
@@ -454,6 +454,31 @@ div.list select {
     z-index: 1000;
 }
 
+.loader {
+    width: 5rem;
+    height: 5rem;
+    border: 5px solid #FFF;
+    border-bottom-color: var(--color-green);
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+body>.loader-overlay {
+    position: fixed;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .relative-container {
     position: relative;
 }
@@ -484,23 +509,33 @@ div.content {
     margin: 2rem;
 }
 
-i.fa.fa-music {
+span.material-symbols-outlined.library-music {
     font-size: 44px;
     padding: 1rem;
     background: var(--color-black);
     color: var(--color-green);
+    border-radius: var(--border-radius);
+    line-height: 1;
 }
 
-div.column-25 i.fa.fa-music
-{
+div.column-25 span.material-symbols-outlined.library-music {
     width: 64px;
     height: 64px;
 }
 
-div.column-10 i.fa.fa-music
-{
+div.column-10 span.material-symbols-outlined.library-music {
     width: 44px;
     height: 44px;
+}
+
+div.playlist-header span.material-symbols-outlined.library-music {
+    width: 8rem;
+    height: 8rem;
+    font-size: 6rem;
+}
+
+div.song span.material-symbols-outlined.library-music {
+    font-size: 24px;
 }
 
 div.content ul {
@@ -562,7 +597,7 @@ p.description {
 div.playlist-header {
     padding: 2rem;
     border-radius: var(--border-radius);
-    background-color: #393939;
+    background-color: var(--color-dark-bg);
     margin-bottom: 2rem;
     font-size: 0.85rem;
     color: #dedede;
@@ -581,8 +616,8 @@ div.playlist-header h6 {
 }
 
 div.playlist-header img {
-    width: auto;
-    height: auto;
+    width: 8rem;
+    height: 8rem;
 }
 
 nav.top-nav>div {
@@ -640,4 +675,64 @@ input:not([type]):focus,
 textarea:focus,
 select:focus {
     border-color: var(--color-green-light);
+}
+
+select:focus {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 8" width="30"><path fill="%231ed760" d="M0,0l6,8l6-8"/></svg>');
+}
+
+nav>div.top-nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    border-radius: var(--border-radius);
+    background-color: var(--color-dark-bg);
+}
+
+nav>div.top-nav-links a {
+    color: var(--color-white);
+}
+
+div.top-nav-links a:not(div.dropdown-menu a) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    text-transform: uppercase;
+}
+
+div.top-nav-links div.dropdown-menu {
+    display: none;
+    width: 20vw;
+    max-width: 500px;
+    border-radius: var(--border-radius);
+    border-top: 1px solid #fff;
+}
+
+div.dropdown:hover .dropdown-menu {
+    display: flex;
+}
+
+div.dropdown-menu a {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    border: 1px solid #fff;
+    padding: 2rem;
+    position: absolute;
+    background: var(--color-dark-bg);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
 }

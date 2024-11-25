@@ -29,12 +29,14 @@
 <script>
     $(function () {
         $('div.list select').on('change', function () {
-            let variant = $(this).closest('div.list').hasClass('top-tracks') ? 'tracks' : 'artists';
-            loader('div#' + variant);
-            let div = $(this).closest('div.top-' + variant);
+            var variant = $(this).closest('div.list').hasClass('top-tracks') ? 'tracks' : 'artists';
+            var div = $(this).closest('div.top-' + variant);
             $.ajax({
                 'method': 'GET',
                 'url': "/main/ajax-get-top-" + variant + "/" + $(this).val(),
+                beforeSend: function(){
+                    loader('div#' + variant);
+                },
                 success: function (response) {
                     loaderStop('div#' + variant);
                     $('div#' + variant).remove();

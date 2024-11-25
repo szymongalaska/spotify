@@ -40,15 +40,20 @@
             <?php endif; ?>
         </div>
         <div class="top-nav-links">
-            <?= $this->Html->link('<span class="material-symbols-outlined">home</span>', ['controller' => 'Main', 'action' => 'dashboard'], ['escape' => false]) ?>
-            <?= $this->Html->link('<span class="material-symbols-outlined">queue_music</span>', ['controller' => 'Playlist', 'action' => 'find'], ['escape' => false]) ?>
+            <?= $this->Html->link('<span class="material-symbols-outlined">home</span>'.__('Home'), ['controller' => 'Main', 'action' => 'dashboard'], ['escape' => false]) ?>
+            <div class="dropdown">
+                <?= $this->Html->link('<span class="material-symbols-outlined">queue_music</span>'.__('Playlists'), '#', ['escape' => false]) ?>
+                <div class="dropdown-menu">
+                    <?= $this->Html->link('<span class="material-symbols-outlined">preview</span>'.__('View playlist'), ['controller' => 'Playlist', 'action' => 'find'], ['escape' => false]) ?>
+                    <?= $this->Html->link('<span class="material-symbols-outlined">merge</span>'.__('Merge playlists'), ['controller' => 'PlaylistMerger', 'action' => 'index'], ['escape' => false]) ?>
+                    <?= $this->Html->link('<span class="material-symbols-outlined">sync</span>'.__('Synchronize playlists'), ['controller' => 'PlaylistMerger', 'action' => 'synchronize'], ['escape' => false]) ?>
+                </div>
+            </div>
+            <?= $this->Html->link('<span class="material-symbols-outlined">logout</span>'.__('Logout'), ['controller' => 'Main', 'action' => 'logout'], ['escape' => false]); ?>
         </div>
         <div class="top-nav-user">
                 <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
                 <span><?= h($this->getRequest()->getSession()->read('user')['display_name']); ?></span>
-            <div class="top-nav-links">
-                <?= $this->Html->link('<span class="material-symbols-outlined">logout</span>', ['controller' => 'Main', 'action' => 'logout'], ['escape' => false]); ?>
-            </div>
         </div>
     </nav>
     <main class="main">
@@ -78,6 +83,17 @@
                         }
                     });
                 }, 10000);
+
+                $(function(){
+                    $('a').on('click', function(){
+                        console.log($(this).href);
+                        loader('body');
+                    });
+
+                    $('form').on('submit', function(){
+                        loader('body');
+                    });
+                })
         </script>
     </footer>
 </body>

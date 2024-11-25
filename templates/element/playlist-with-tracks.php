@@ -8,7 +8,7 @@
         <?php if ($playlist['images']): ?>
             <?= $this->Html->image($playlist['images'][0]['url']) ?>
         <?php else: ?>
-            <i class="fa fa-music"></i>
+            <span class="material-symbols-outlined library-music">library_music</span>
         <?php endif; ?>
     </div>
     <div class="column" style="display: flex;flex-direction: column;justify-content: center">
@@ -27,10 +27,16 @@
 </div>
 <div class="row">
     <div class="column">
+        <?php if(empty($playlist['tracks'])) : ?>
+            <div class="messsage error">
+                <?= __('Playlist is empty.') ?>
+            </div>
+        <?php else: ?>
         <ul>
             <?php foreach ($playlist['tracks'] as $track): ?>
                 <li><?php echo $this->element('song', ['track' => $track['track']]) ?></li>
             <?php endforeach; ?>
         </ul>
+        <?php endif; ?>
     </div>
 </div>
