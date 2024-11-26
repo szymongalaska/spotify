@@ -12,21 +12,86 @@ use Cake\I18n\FrozenTime;
 class PlaylistMergerController extends PlaylistController
 {
     /**
-     * Render playlist merger
+     * Render playlist merger edit view
      * 
      * @return \Cake\Http\Response|null
      */
-    public function index()
+    public function edit(int $id)
     {
-        if($entity = $this->PlaylistMerger->findByUserId($this->getRequest()->getSession()->read('user')['id'])->first())
+        if(!$entity = $this->_getEntity($id))
         {
+            $this->Flash->error(__('Access denied'));
+            return $this->redirect(['action' => 'index']);
+        }
             $entity->source_playlists = json_decode($entity->source_playlists, true);
             $entity->options = json_decode($entity->options, true);
             $this->set('userSavedData', $entity);
-        }
-            
+            $this->set('myPlaylists', $this->getUserPlaylists());
+            $this->set('myOwnPlaylists', $this->getUserOwnPlaylists());
+    }
+
+    /**
+     * Render playlist merger edit view
+     * 
+     * @return \Cake\Http\Response|null
+     */
+    public function add()
+    {
         $this->set('myPlaylists', $this->getUserPlaylists());
         $this->set('myOwnPlaylists', $this->getUserOwnPlaylists());
+    }
+
+    /**
+     * Get merge entity and check if it belongs to current user
+     * @param int $id
+     * @return \App\Model\Entity\PlaylistMerger|null
+     */
+    private function _getEntity(int $id)
+    {
+        $entity = $this->PlaylistMerger->get($id);
+        if($entity->user_id === $this->getRequest()->getSession()->read('user')['id'])
+            return $entity;
+        else
+            return null;
+    }
+
+    /**
+     * Render index view
+     * @return void
+     */
+    public function index()
+    {
+        $playlists = $this->PlaylistMerger->findByUserId($this->getRequest()->getSession()->read('user')['id'])->select(['id', 'target_playlist_id']);
+
+        $playlists = array_map( function($playlist){
+            return [
+                'id' => $playlist->id,
+                'playlist' => $this->getPlaylist($playlist->target_playlist_id),
+            ];
+        }, $playlists->toArray());
+
+        $this->set(compact('playlists'));
+    }
+
+    /**
+     * Delete entity
+     * @param int $id
+     * @return \Cake\Http\Response|null
+     */
+    public function delete(int $id)
+    {
+        if(!$entity = $this->_getEntity($id))
+            $this->Flash->error(__('Access denied'));
+            
+        else
+        {
+            if($this->PlaylistMerger->delete($entity))
+                $this->Flash->success(__('Merge deleted'));
+            else
+                $this->Flash->error(__('An error occured while deleting'));
+        }
+
+        return $this->redirect(['action' => 'index']);
     }
 
     /**
@@ -40,17 +105,17 @@ class PlaylistMergerController extends PlaylistController
             'savedTracks' => $this->getRequest()->getData('savedTracks'),
         ];
 
-        $entity = $this->_saveEntity($this->getRequest()->getData('source-playlists'), $this->getRequest()->getData('target-playlist'), $options);
+        $entity = $this->_saveEntity($this->getRequest()->getData('source-playlists'), $this->getRequest()->getData('target-playlist'), $options, $this->getRequest()->getData('entity-id'));
         
         if(!$entity)
         {
-            $this->Flash->error(__('There was an error while saving playlists'));
+            $this->Flash->error(__('An error occured while saving playlists'));
             return $this->redirect(['action' => 'index']);  
         }
 
         $this->_mergePlaylists($entity);
         
-        return $this->redirect(['controller' => 'Main', 'action' => 'dashboard']);
+        return $this->redirect(['action' => 'index']);
     }
 
     /**
@@ -59,10 +124,13 @@ class PlaylistMergerController extends PlaylistController
      */
     public function synchronize()
     {
-        $entity = $this->PlaylistMerger->findByUserId($this->getRequest()->getSession()->read('user')['id'])->first();
+        $entities = $this->PlaylistMerger->findByUserId($this->getRequest()->getSession()->read('user')['id']);
         
-        if($entity)
-            $this->_mergePlaylists($entity);
+        if($entities->count() > 0)
+        {
+            foreach($entities as $entity)
+                $this->_mergePlaylists($entity);
+        }
             
         return $this->redirect($this->getRequest()->referer());
     }
@@ -75,6 +143,7 @@ class PlaylistMergerController extends PlaylistController
     private function _mergePlaylists(\App\Model\Entity\PlaylistMerger $entity)
     { 
         $options = json_decode($entity->options, true);
+        $playlist = $this->getPlaylist($entity->target_playlist_id);
 
         $sourceTracks = $this->_getTracksOfSourcePlaylists(json_decode($entity->source_playlists, true));
         $targetPlaylistTracks = $this->getTracksOfPlaylist($entity->target_playlist_id, $this->getPlaylistSnapshotId($entity->target_playlist_id));
@@ -125,11 +194,11 @@ class PlaylistMergerController extends PlaylistController
 
 
         if(empty($tracksToAdd) && empty($tracksToRemove))
-            $this->Flash->info('Playlists are already merged');
+            $this->Flash->info(__('Playlist {0} is already merged', $playlist['name']));
         else if(!$resultAdd || !$resultRemove)
-            $this->Flash->error(__('There was a problem while merging playlists'));
+            $this->Flash->error(__('There was a problem while merging playlist {0}', $playlist['name']));
         else
-            $this->Flash->success(__('Playlists merged successfuly'));
+            $this->Flash->success(__('{0} merged successfuly', $playlist['name']));
     }
 
     /**
@@ -226,9 +295,9 @@ class PlaylistMergerController extends PlaylistController
      * @param array $options
      * @return mixed
      */
-    private function _saveEntity(array $sourcePlaylists, string $targetPlaylist, array $options)
+    private function _saveEntity(array $sourcePlaylists, string $targetPlaylist, array $options, mixed $entityId = null)
     {
-        $entity = $this->PlaylistMerger->findByUserId($this->getRequest()->getSession()->read('user')['id'])->first() ?? $this->PlaylistMerger->newEmptyEntity();
+        $entity = $entityId ? $this->PlaylistMerger->get($entityId) : $this->PlaylistMerger->newEmptyEntity();
 
         $data = [
             'user_id' => $this->getRequest()->getSession()->read('user')['id'],

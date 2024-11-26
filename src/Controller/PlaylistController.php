@@ -81,4 +81,14 @@ class PlaylistController extends AppController
             return $this->getApi()->getPlaylistTracks($playlistId, 'added_at,track(id)');
         }, '_spotify_');
     }
+
+    /**
+     * Get a playlist
+     * @param string $playlistId
+     * @return array
+     */
+    protected function getPlaylist(string $playlistId)
+    {
+        return $this->getApi()->getPlaylist($playlistId);
+    }
 }

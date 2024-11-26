@@ -5,83 +5,27 @@
 ?>
 <div class="playlistMerger">
     <div class="content">
-        <p class="description"><?= __('Merge multiple playlists into one. Target playlist must be your own.') ?></p>
-    </div>
-    <div class="playlists-container">
-        <div class="content list playlists">
-            <div class="row">
-                <h3><?= __('Select source playlists') ?></h3>
-            </div>
-            <ul id="source-playlists[]">
-                <?php foreach ($myPlaylists as $playlist): ?>
-                    <li <?php if (in_array($playlist['id'], $userSavedData['source_playlists'])): ?>class="selected" <?php endif; ?>><?php echo $this->element('playlist', ['playlist' => $playlist]) ?></li>
+        <h3><?= __('Your merged playlists') ?></h3>
+        <div class="list playlists">
+            <ul>
+                <?php foreach ($playlists as $playlist): ?>
+                    <li>
+                        <div class="row">
+                            <div class="column"><a
+                                    href="<?= $this->Url->build(['action' => 'edit', $playlist['id']]) ?>"><?php echo $this->element('playlist', ['playlist' => $playlist['playlist']]) ?></a>
+                            </div>
+                            <div class="column column-10">
+                                <?= $this->Form->postLink('<span class="material-symbols-outlined delete">delete</span>', ['action' => 'delete', $playlist['id']], ['escape' => false, 'confirm' => __('Are you sure you want to delete merging of {0}?', $playlist['playlist']['name'])]) ?>
+                            </div>
+                        </div>
+                    </li>
                 <?php endforeach; ?>
             </ul>
         </div>
-        <div class="content list playlists">
-            <div class="row">
-                <h3><?= __('Select target playlist') ?></h3>
+        <div class="row">
+            <div class="column" style="display: flex; justify-content: center; align-items: center;">
+                <?= $this->Html->link(__('Create new merge'), ['action' => 'add'], ['class' => 'button']) ?>
             </div>
-            <ul id="target-playlist">
-                <?php foreach ($myOwnPlaylists as $playlist): ?>
-                    <li <?php if ($playlist['id'] == $userSavedData['target_playlist_id']): ?>class="selected" <?php endif; ?>>
-                        <?php echo $this->element('playlist', ['playlist' => $playlist]) ?></li>
-                <?php endforeach; ?>
-            </ul>
         </div>
     </div>
-    <?= $this->Form->create(null, ['url' => ['action' => 'saveAndMerge']]) ?>
-    <div class="content">
-        <fieldset>
-            <?= $this->Form->control('savedTracks', ['type' => 'checkbox', 'label' => __('Include only songs added to the library (Saved Tracks)')]) ?>
-            <?= $this->Form->control('prepend', ['type' => 'checkbox', 'label' => __('Add newest songs on top of playlist')]) ?>
-            <div class="hidden">
-                <select name="source-playlists[]" multiple="multiple">
-                    <?php foreach ($myPlaylists as $playlist): ?>
-                        <option <?php if (in_array($playlist['id'], $userSavedData['source_playlists'])): ?>selected <?php endif; ?>value="<?= $playlist['id'] ?>"><?= h($playlist['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-
-                <select name="target-playlist">
-                    <?php foreach ($myOwnPlaylists as $playlist): ?>
-                        <option <?php if ($playlist['id'] == $userSavedData['target_playlist_id']): ?>selected <?php endif; ?>value="<?= $playlist['id'] ?>"><?= h($playlist['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </fieldset>
-    </div>
-    <?= $this->Form->submit(__('Submit')) ?>
-    <?= $this->Form->end() ?>
 </div>
-
-<script>
-    $(function () {
-        
-        let options = {
-            prepend: <?= $userSavedData->options['prepend'] ?? false ?>,
-            savedTracks: <?= $userSavedData->options['savedTracks'] ?? false ?>
-        };
-
-        $.each(options, function (index, value) {
-            $('input[name="' + index + '"]').prop('checked', value);
-        });
-
-        $('ul li').on('click', function () {
-
-            let id = $(this).parent().attr('id');
-            let val = $(this).children('div.row.playlist').data('id');
-            let option = 'select[name="' + id + '"] option[value="' + val + '"]';
-            let prop = $(option).prop('selected');
-
-            $(option).prop('selected', !prop);
-
-            if (id == 'target-playlist') {
-                $('ul#target-playlist li.selected').each(function () {
-                    $(this).removeClass('selected');
-                });
-            }
-
-            $(this).toggleClass('selected');
-        });
-    });
-</script>

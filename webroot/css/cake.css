@@ -736,3 +736,8 @@ div.dropdown-menu a {
     left: 50%;
     transform: translateX(-50%);
 }
+
+span.material-symbols-outlined.delete:hover
+{
+    color: #cd101e;
+}

@@ -85,8 +85,7 @@
                 }, 10000);
 
                 $(function(){
-                    $('a').on('click', function(){
-                        console.log($(this).href);
+                    $('a:not([href="#"])').on('click', function(){
                         loader('body');
                     });
 

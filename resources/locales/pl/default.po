@@ -25,11 +25,14 @@ msgstr "Wybierz playlistę docelową"
 msgid "Submit"
 msgstr "Potwierdź"
 
-msgid "There was an error while saving playlists"
+msgid "An error occured while saving playlists"
 msgstr "Wystąpił błąd podczas zapisu playlist"
 
-msgid "Playlists merged successfully"
-msgstr "Pomyślnie scalono playlisty"
+msgid "An error occured while deleting"
+msgstr "Wystąpił błąd podczas usuwania"
+
+msgid "Playlist {0} merged successfully"
+msgstr "Pomyślnie scalono playlistę {0}"
 
 msgid "Login"
 msgstr "Zaloguj się"
@@ -46,11 +49,11 @@ msgstr "Uwzględnij tylko piosenki dodane do biblioteki (Polubione)"
 msgid "Add newest songs on top of playlist"
 msgstr "Dodawaj najnowsze piosenki na początek playlisty"
 
-msgid "Playlists are already merged"
-msgstr "Playlisty są już scalone"
+msgid "Playlist {0} is already merged"
+msgstr "Playlista {0} jest już scalona"
 
-msgid "There was a problem while merging playlist"
-msgst "Wystąpił błąd podczas scalania playlist"
+msgid "There was a problem while merging playlist {0}"
+msgst "Wystąpił błąd podczas scalania playlisty {0}"
 
 msgid "Access revoked. Please login."
 msgstr "Brak dostępu. Zaloguj się ponownie."
@@ -81,3 +84,12 @@ msgstr "Scal playlisty"
 
 msgid "Synchronize playlists"
 msgstr "Zsynchronizuj playlisty"
+
+msgid "Create new merge"
+msgstr "Utwórz nowe scalenie"
+
+msgid "Your merged playlists"
+msgstr "Twoje scalone playlisty"
+
+msgid "Are you sure you want to delete merging of {0}?"
+msgstr "Czy jesteś pewien, że chcesz usunąć scalanie {0}?"
