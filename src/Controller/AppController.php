@@ -19,6 +19,7 @@ namespace App\Controller;
 use App\Utility\SpotifyApi;
 use Cake\Controller\Controller;
 use Cake\Cache\Cache;
+use Cake\I18n\I18n;
 
 /**
  * Application Controller
@@ -59,12 +60,45 @@ class AppController extends Controller
     }
 
     /**
+     * Reads user prefered language from browser data or session
+     * @return string
+     */
+    private function _getLanguage()
+    {
+        $supportedLanguages = ['pl', 'en'];
+        if(!$this->getRequest()->getSession()->check('lang'))
+        {
+            $languages = $this->getRequest()->getHeaderLine('Accept-Language');
+            $language = substr(explode(',', $languages)[0], 0, 2);
+
+            $language = (in_array($language, $supportedLanguages)) ? $language : 'en';
+        }
+        else
+            $language = $this->getRequest()->getSession()->read('lang');
+
+        return $language;
+    }
+
+    /**
+     * Sets app language
+     * @return void
+     */
+    private function _setLanguage()
+    {
+        $language = $this->_getLanguage();
+        $this->getRequest()->getSession()->write('lang', $language);
+        I18n::setLocale($language);
+    }
+
+    /**
      * 
      * @param \Cake\Event\EventInterface $event
      * @return \Cake\Http\Response|null
      */
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
+        $this->_setLanguage();
+        
         if(!in_array($this->getRequest()->getParam('action'), ['login', 'logout']) && !in_array($this->getRequest()->getParam('controller'), ['Pages']))
         {
             // Redirect to login screen if not logged in
