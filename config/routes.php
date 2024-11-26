@@ -64,6 +64,8 @@ return function (RouteBuilder $routes): void {
 
         $builder->connect('/login', ['controller' => 'Main' , 'action' => 'login']);
 
+        $builder->connect('/dashboard', 'Main::dashboard');
+
         /*
          * Connect catchall routes for all controllers.
          *
