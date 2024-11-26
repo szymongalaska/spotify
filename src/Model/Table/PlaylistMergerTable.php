@@ -59,8 +59,7 @@ class PlaylistMergerTable extends Table
     {
         $validator
             ->integer('user_id')
-            ->notEmptyString('user_id')
-            ->add('user_id', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+            ->notEmptyString('user_id');
 
         $validator
             ->scalar('source_playlists')
@@ -71,7 +70,8 @@ class PlaylistMergerTable extends Table
             ->scalar('target_playlist_id')
             ->maxLength('target_playlist_id', 50)
             ->requirePresence('target_playlist_id', 'create')
-            ->notEmptyString('target_playlist_id');
+            ->notEmptyString('target_playlist_id')
+            ->add('target_playlist_id', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('options')
@@ -89,7 +89,7 @@ class PlaylistMergerTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add($rules->isUnique(['user_id']), ['errorField' => 'user_id']);
+        $rules->add($rules->isUnique(['target_playlist_id']), ['errorField' => 'target_playlist_id']);
         $rules->add($rules->existsIn(['user_id'], 'Users'), ['errorField' => 'user_id']);
 
         return $rules;

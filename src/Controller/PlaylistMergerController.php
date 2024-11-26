@@ -64,7 +64,7 @@ class PlaylistMergerController extends PlaylistController
         if($entity)
             $this->_mergePlaylists($entity);
             
-        return $this->redirect(['controller' => 'Main', 'action' => 'dashboard']);
+        return $this->redirect($this->getRequest()->referer());
     }
 
     /**
@@ -125,7 +125,7 @@ class PlaylistMergerController extends PlaylistController
 
 
         if(empty($tracksToAdd) && empty($tracksToRemove))
-            $this->Flash->error('Playlists are already merged');
+            $this->Flash->info('Playlists are already merged');
         else if(!$resultAdd || !$resultRemove)
             $this->Flash->error(__('There was a problem while merging playlists'));
         else

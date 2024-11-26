@@ -534,7 +534,7 @@ div.playlist-header span.material-symbols-outlined.library-music {
     font-size: 6rem;
 }
 
-div.song span.material-symbols-outlined.library-music {
+div.song span.material-symbols-outlined.library-music:not(nav div.song span.material-symbols-outlined.library-music) {
     font-size: 24px;
 }
 
