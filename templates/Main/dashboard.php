@@ -5,16 +5,6 @@
 ?>
 <div class="dashboard">
 
-    <div class="content">
-        <div class="row">
-            <div class="column">
-                <h3><?= __('Today you have listened to music that is mostly: ') ?></h3>
-            </div>
-        </div>
-        <div id="todays-mood">
-        </div>
-    </div>
-
     <div class="content list top-tracks">
         <div class="row">
             <h3><?= __('Top tracks') ?></h3>
@@ -54,18 +44,5 @@
                 }
             })
         });
-
-        $.ajax({
-            'url': '<?= $this->Url->build(['action' => 'ajaxGetTodaysMood']) ?>',
-            'method' : 'GET',
-            beforeSend: function(){
-                loader('div#todays-mood');
-            },
-            success: function(response){
-                loaderStop('div#todays-mood');
-                $('div#todays-mood').html(response);
-            }
-        });
-        
     });
 </script>

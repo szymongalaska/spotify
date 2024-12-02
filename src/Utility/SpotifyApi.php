@@ -92,60 +92,6 @@ class SpotifyApi
      */
     private const MAX_RETRY_NUMBER = 3;
 
-    private const MAX_SEED_VALUES = 5;
-
-    /**
-     * Available options in recommendations endpoint
-     * @var array
-     */
-    private const array RECOMMENDATIONS_OPTIONS = [
-        'seed_artists',
-        'seed_genres',
-        'seed_tracks',
-        'min_acousticness',
-        'max_acousticness',
-        'target_acousticness',
-        'min_danceability',
-        'max_danceability',
-        'target_danceability',
-        'min_duration_ms',
-        'max_duration_ms',
-        'target_duration_ms',
-        'min_energy',
-        'max_energy',
-        'target_energy',
-        'min_instrumentalness',
-        'max_instrumentalness',
-        'target_instrumentalness',
-        'min_key',
-        'max_key',
-        'target_key',
-        'min_liveness',
-        'max_liveness',
-        'target_liveness',
-        'min_loudness',
-        'max_loudness',
-        'target_loudness',
-        'min_mode',
-        'max_mode',
-        'target_mode',
-        'min_popularity',
-        'max_popularity',
-        'target_popularity',
-        'min_speechiness',
-        'max_speechiness',
-        'target_speechiness',
-        'min_tempo',
-        'max_tempo',
-        'target_tempo',
-        'min_time_signature',
-        'max_time_signature',
-        'target_time_signature',
-        'min_valence',
-        'max_valence',
-        'target_valence'
-    ];
-
     /**
      * Constructor
      * 
@@ -743,7 +689,6 @@ class SpotifyApi
         return $this->_batchRetrieveData($url, 'GET');
     }
 
-    
     /**
      * Modify playlist according to method parameter
      * 
@@ -873,58 +818,6 @@ class SpotifyApi
         });
 
         return $items[0];
-    }
-
-    /**
-     * Get audio feature information for a single track identified by its unique Spotify ID.
-     * 
-     * @param string|array $tracksIds A single ID or an array of the Spotify IDs for the tracks.
-     * 
-     * @return array
-     */
-    public function getTracksAudioFeatures(string|array $tracksIds): array
-    {
-        if(is_string($tracksIds))
-            return $this->_request('GET', self::API_URL.'/v1/audio-features/'.$tracksIds);
-        else
-        {
-            $tracksIds = array_chunk($tracksIds, 100);
-            $tracks = [];
-            foreach($tracksIds as $items)
-            {
-                $ids = implode(',', $items);
-                $result = $this->_request('GET', self::API_URL.'/v1/audio-features', ['ids' => $ids]);
-                $tracks = array_merge($tracks, $result);
-            }
-
-            return $tracks;
-        }
-    }
-
-    public function getRecommendations(array $seeds, int $limit = 20, array $options = [])
-    {
-        if(empty($seeds))
-            throw new InvalidArgumentException(__('One type of seed is required'));
-
-        foreach($seeds as $seed => $values)
-        {
-            $elements = count(explode(',', $values));
-            if($elements > self::MAX_SEED_VALUES)
-                throw new InvalidArgumentException(__('Too many seed values'));
-
-            $key = 'seed_'.$seed;
-            $options[$key] = $values;
-        }
-        
-        foreach($options as $option => $value)
-        {
-            if(!in_array($option,self::RECOMMENDATIONS_OPTIONS))
-                throw new InvalidArgumentException(__('Option not available'));
-        }
-
-        $options['limit'] = $limit;
-
-        return $this->_request('GET', self::API_URL.'/v1/recommendations', $options);
     }
 
     /**
