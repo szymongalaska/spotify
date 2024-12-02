@@ -20,7 +20,6 @@ use App\Utility\SpotifyApi;
 use Cake\Controller\Controller;
 use Cake\Cache\Cache;
 use Cake\I18n\I18n;
-
 /**
  * Application Controller
  *
