@@ -98,7 +98,7 @@ class AppController extends Controller
     {
         $this->_setLanguage();
         
-        if(!in_array($this->getRequest()->getParam('action'), ['login', 'logout']) && !in_array($this->getRequest()->getParam('controller'), ['Pages']))
+        if(!in_array($this->getRequest()->getParam('action'), ['login', 'logout', 'cron']) && !in_array($this->getRequest()->getParam('controller'), ['Pages']))
         {
             // Redirect to login screen if not logged in
             if(!$this->getRequest()->getSession()->check('user'))

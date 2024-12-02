@@ -6,7 +6,7 @@ namespace App\Controller;
 use Cake\Cache\Cache;
 use Cake\Http\Exception\BadRequestException;
 
-class PlaylistController extends AppController
+class PlaylistController extends MainController
 {
 
     /**

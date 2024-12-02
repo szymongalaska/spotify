@@ -192,7 +192,6 @@ class PlaylistMergerController extends PlaylistController
         else
             $resultRemove = true;
 
-
         if(empty($tracksToAdd) && empty($tracksToRemove))
             $this->Flash->info(__('Playlist {0} is already merged', $playlist['name']));
         else if(!$resultAdd || !$resultRemove)
@@ -320,5 +319,33 @@ class PlaylistMergerController extends PlaylistController
         return array_map(function($playlist){
             return ['playlist_id' => $playlist, 'snapshot_id' => $this->getPlaylistSnapshotId($playlist)];
         }, $sourcePlaylists);
+    }
+
+    public function cron()
+    {
+        $this->autoRender = false;
+
+        if($this->getRequest()->getQuery('token') !== 'qM7MO43sqOfYRFcDKlBwXuMRxFcTv0RTeURD1iFm0p5Lb7k3f0Fbx2jB8hAMGTX0')
+            return $this->response->withStatus(401);
+
+        $users = $this->fetchTable('Users')->find('all')->contain('PlaylistMerger');
+
+        foreach($users as $user)
+        {
+            if(!$user->playlist_merger)
+                continue; 
+
+            $this->getApi()->setTokensOfUser($user->access_token, $user->refresh_token);
+            $this->getRequest()->getSession()->write('user', $user);
+
+            foreach($user->playlist_merger as $entity)
+            {
+                $this->_mergePlaylists($entity);
+            }
+        }
+
+        $this->getRequest()->getSession()->delete('user');
+
+        return $this->response->withStatus(200);
     }
 }

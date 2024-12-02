@@ -281,7 +281,9 @@ class SpotifyApi
      */
     public function getAllPlaylists()
     {
-        return $this->_batchRetrieveData(self::API_URL.'/v1/me/playlists?limit=50');
+        $playlists = $this->_batchRetrieveData(self::API_URL.'/v1/me/playlists?limit=50');
+
+        return array_filter($playlists);
     }
 
     /**

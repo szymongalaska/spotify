@@ -46,7 +46,7 @@ class MainController extends AppController
      * 
      * @return \Cake\Http\Response|null
      */
-    private function _setUser(string $accessToken, string $refreshToken)
+    protected function _setUser(string $accessToken, string $refreshToken)
     {
         $profile = $this->getApi()->getProfile();
 
