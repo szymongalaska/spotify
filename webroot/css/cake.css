@@ -741,3 +741,8 @@ span.material-symbols-outlined.delete:hover
 {
     color: #cd101e;
 }
+
+div.song.unavailable
+{
+    opacity: 0.3;
+}

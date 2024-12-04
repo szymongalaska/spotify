@@ -3,7 +3,7 @@
  * @var \App\View\AppView $this
  */
 ?>
-<div class="row song" data-id="<?= $track['id'] ?>">
+<div class="row song <?php if(isset($track['is_playable']) && $track['is_playable'] == false) : ?>unavailable<?php endif; ?>" data-id="<?= $track['id'] ?>">
     <div class="image-column column <?php echo isset($playing) && $playing == true ? 'column-20' : 'column-10' ?>">
     <?php if($track['album']['images']): ?>
         <?= $this->Html->image($track['album']['images'][0]['url'], ['alt' => $track['album']['name']]) ?>

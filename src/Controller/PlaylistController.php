@@ -17,7 +17,7 @@ class PlaylistController extends MainController
     public function view(string $playlistId)
     {
         try{
-            $playlist = $this->getApi()->getPlaylist($playlistId);
+            $playlist = $this->getPlaylist($playlistId);
             $playlist['tracks'] = $this->getApi()->getPlaylistTracks($playlistId);
             $this->set(compact('playlist'));
         }
@@ -26,6 +26,63 @@ class PlaylistController extends MainController
             $this->Flash->error(__("Failed to find the playlist with the given ID. Please make sure the ID is correct and the playlist is not private."));
             return $this->redirect(['action' => 'find']);
         }
+    }
+
+    /**
+     * Render view of playlists
+     * @param string $playlistId The Spotify ID of playlist
+     * @return \Cake\Http\Response|null
+     */
+    public function viewNotAvailable()
+    {
+        $this->set('playlists', $this->getUserPlaylists());
+    }
+
+    /**
+     * Render view of not available tracks
+     * @param string $playlistId The Spotify ID of playlist
+     * @return \Cake\Http\Response|null
+     */
+    public function viewNotAvailableTracks(string $playlistId)
+    {
+        
+        $playlist = $this->getPlaylist($playlistId);
+        $tracks =  $this->getApi()->getPlaylistTracks($playlistId);
+        $playlist['tracks'] = $this->filterAvailableTracks($tracks);
+
+        $this->set(compact('playlist'));
+    }
+
+    /**
+     * Remove not available tracks from array of tracks
+     * @param array $tracks Array of tracks
+     * @return array Filtered array
+     */
+    protected function filterNotAvailableTracks(array $tracks)
+    {
+        return array_filter($tracks, function($track){
+
+            if($track['track']['is_local'] === true)
+                return true;
+
+            return $track['track']['is_playable'];
+        });
+    }
+
+    /**
+     * Remove available tracks from array of tracks
+     * @param array $tracks Array of tracks
+     * @return array Filtered array
+     */
+    protected function filterAvailableTracks(array $tracks)
+    {
+        return array_filter($tracks, function($track){
+
+            if($track['track']['is_local'] === true)
+                return false;
+
+            return !$track['track']['is_playable'];
+        });
     }
 
     /**

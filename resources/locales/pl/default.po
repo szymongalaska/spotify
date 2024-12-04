@@ -93,3 +93,12 @@ msgstr "Twoje scalone playlisty"
 
 msgid "Are you sure you want to delete merging of {0}?"
 msgstr "Czy jesteś pewien, że chcesz usunąć scalanie {0}?"
+
+msgid "Unavailable tracks in playlist"
+msgstr "Niedostępne utwory w playliście"
+
+msgid "List of unavailable tracks"
+msgstr "Lista niedostępnych utworów"
+
+msgid "Select playlist"
+msgstr "Wybierz playlistę"

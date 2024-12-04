@@ -45,6 +45,7 @@
                 <?= $this->Html->link('<span class="material-symbols-outlined">queue_music</span>'.__('Playlists'), '#', ['escape' => false]) ?>
                 <div class="dropdown-menu">
                     <?= $this->Html->link('<span class="material-symbols-outlined">preview</span>'.__('View playlist'), ['controller' => 'Playlist', 'action' => 'find'], ['escape' => false]) ?>
+                    <?= $this->Html->link('<span class="material-symbols-outlined">play_disabled</span>'.__('List of unavailable tracks'), ['controller' => 'Playlist', 'action' => 'viewNotAvailable'], ['escape' => false]) ?>
                     <?= $this->Html->link('<span class="material-symbols-outlined">merge</span>'.__('Merge playlists'), ['controller' => 'PlaylistMerger', 'action' => 'index'], ['escape' => false]) ?>
                     <?= $this->Html->link('<span class="material-symbols-outlined">sync</span>'.__('Synchronize playlists'), ['controller' => 'PlaylistMerger', 'action' => 'synchronize'], ['escape' => false]) ?>
                 </div>
