@@ -6,7 +6,7 @@
 ?>
 <div class="playlist">
     <div class="content">
-        <h3><?= __('Unavailable tracks in playlist') ?></h3>
+            <h3><?= __('Unavailable tracks in playlist') ?>: <?= count($playlist['tracks']) ?></h3>
         <?php echo $this->element('playlist-with-tracks', ['playlist' => $playlist]) ?>
     </div>
 </div>
