@@ -92,6 +92,8 @@ class SpotifyApi
      */
     private const MAX_RETRY_NUMBER = 3;
 
+    private string $market = 'from_token';
+
     /**
      * Constructor
      * 
@@ -104,7 +106,7 @@ class SpotifyApi
         $this->_clientId = $clientId;
         $this->_clientSecret = $clientSecret;
         $this->_redirectUri = $redirectUri;
-        
+
         $this->_options = [];
         $this->_headers = [];
 
@@ -123,17 +125,17 @@ class SpotifyApi
      */
     public function getAuthorizeUrl(array $options = [])
     {
-        $parameters = 
-        [
-            'response_type' => 'code',
-            'client_id' => $this->getClientId(),
-            'redirect_uri' => $this->getRedirectUri(),
-            'scope' => isset($options['scope']) ? implode(' ', $options['scope']) : null,
-            'state' => $options['state'] ?? null,
-            'show_dialog' => !empty($options['show_dialog']) ? 'true' : null,
-        ];
+        $parameters =
+            [
+                'response_type' => 'code',
+                'client_id' => $this->getClientId(),
+                'redirect_uri' => $this->getRedirectUri(),
+                'scope' => isset($options['scope']) ? implode(' ', $options['scope']) : null,
+                'state' => $options['state'] ?? null,
+                'show_dialog' => !empty($options['show_dialog']) ? 'true' : null,
+            ];
 
-        return $this->getClient()->buildUrl(self::ACCOUNT_URL.'/authorize', $parameters);
+        return $this->getClient()->buildUrl(self::ACCOUNT_URL . '/authorize', $parameters);
     }
 
     /**
@@ -146,11 +148,11 @@ class SpotifyApi
     public function requestAccessToken(string $code)
     {
         $data =
-        [
-            'grant_type' => 'authorization_code',
-            'code' => $code,
-            'redirect_uri' => $this->getRedirectUri(),
-        ];
+            [
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+                'redirect_uri' => $this->getRedirectUri(),
+            ];
 
         $this->sendTokenRequest($data);
     }
@@ -165,17 +167,17 @@ class SpotifyApi
     private function sendTokenRequest($data)
     {
         $headers = [
-            'Authorization' => 'Basic '.base64_encode($this->getClientId().':'.$this->getClientSecret()),
+            'Authorization' => 'Basic ' . base64_encode($this->getClientId() . ':' . $this->getClientSecret()),
             'Content-Type' => 'application/x-www-form-urlencoded',
         ];
 
         $this->_addHeaders($headers);
 
-        $response = $this->_request('POST',self::ACCOUNT_URL.'/api/token', $data);
+        $response = $this->_request('POST', self::ACCOUNT_URL . '/api/token', $data);
 
         $this->_setAccessToken($response['access_token']);
 
-        if(isset($response['refresh_token']))
+        if (isset($response['refresh_token']))
             $this->_setRefreshToken($response['refresh_token']);
     }
 
@@ -187,10 +189,10 @@ class SpotifyApi
     private function _refreshTokens()
     {
         $data =
-        [
-            'grant_type' => 'refresh_token',
-            'refresh_token' => $this->getRefreshToken(),
-        ];
+            [
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $this->getRefreshToken(),
+            ];
 
         $this->sendTokenRequest($data);
 
@@ -209,12 +211,12 @@ class SpotifyApi
      * 
      * @return array
      */
-    public function getTop(string $type, string $time_range = 'medium_term', int $limit = 20, int $offset = 0) :array
+    public function getTop(string $type, string $time_range = 'medium_term', int $limit = 20, int $offset = 0): array
     {
-        if(!in_array($type, ['artists', 'tracks']))
+        if (!in_array($type, ['artists', 'tracks']))
             throw new \Exception('Not supported type.');
 
-        return $this->_request('GET', self::API_URL.'/v1/me/top/'.$type, ['time_range' => $time_range, 'limit' => $limit, 'offset' => $offset]);
+        return $this->_request('GET', self::API_URL . '/v1/me/top/' . $type, ['time_range' => $time_range, 'limit' => $limit, 'offset' => $offset]);
     }
 
     /**
@@ -224,7 +226,7 @@ class SpotifyApi
      */
     public function getProfile()
     {
-        return $this->_request('GET', self::API_URL.'/v1/me');
+        return $this->_request('GET', self::API_URL . '/v1/me');
     }
 
     /**
@@ -234,7 +236,7 @@ class SpotifyApi
      */
     public function getCurrentlyPlaying()
     {
-        return $this->_request('GET', self::API_URL.'/v1/me/player/currently-playing');
+        return $this->_request('GET', self::API_URL . '/v1/me/player/currently-playing');
     }
 
     /**
@@ -244,8 +246,8 @@ class SpotifyApi
      */
     public function getAllSavedTracks()
     {
-        
-        return $this->_batchRetrieveData(self::API_URL.'/v1/me/tracks?limit=50');
+
+        return $this->_batchRetrieveData(self::API_URL . '/v1/me/tracks?limit=50');
     }
 
     /**
@@ -258,7 +260,7 @@ class SpotifyApi
      */
     public function getSavedTracks(int $limit = 20, int $offset = 0)
     {
-        return $this->_request('GET', self::API_URL.'/v1/me/tracks', ['limit' => $limit, 'offset' => $offset]);
+        return $this->_request('GET', self::API_URL . '/v1/me/tracks', ['limit' => $limit, 'offset' => $offset]);
     }
 
     /**
@@ -271,7 +273,7 @@ class SpotifyApi
      */
     public function getPlaylists(int $limit = 20, int $offset = 0)
     {
-        return $this->_request('GET', self::API_URL.'/v1/me/playlists', ['limit' => $limit, 'offset' => $offset]);
+        return $this->_request('GET', self::API_URL . '/v1/me/playlists', ['limit' => $limit, 'offset' => $offset]);
     }
 
     /**
@@ -281,7 +283,7 @@ class SpotifyApi
      */
     public function getAllPlaylists()
     {
-        $playlists = $this->_batchRetrieveData(self::API_URL.'/v1/me/playlists?limit=50');
+        $playlists = $this->_batchRetrieveData(self::API_URL . '/v1/me/playlists?limit=50');
 
         return array_filter($playlists);
     }
@@ -297,8 +299,8 @@ class SpotifyApi
     {
         $playlists = $this->getAllPlaylists();
 
-        return array_filter($playlists, function($playlist) use ($ownerId){
-            if($playlist['owner']['id'] == $ownerId)
+        return array_filter($playlists, function ($playlist) use ($ownerId) {
+            if ($playlist['owner']['id'] == $ownerId)
                 return $playlist;
         });
     }
@@ -315,18 +317,17 @@ class SpotifyApi
     private function _batchRetrieveData(string $url, string $method = 'GET', string $path = '')
     {
         $items = [];
-        
-        do
-        {
+
+        do {
             $response = $this->_request($method, $url);
 
-            if($path !== '')
+            if ($path !== '')
                 $response = $this->_getValueByPath($response, $path);
 
             $url = $response['next'];
             $items = array_merge($items, $response['items']);
         }
-        while(!empty($response['next']));
+        while (!empty($response['next']));
 
         return $items;
     }
@@ -386,21 +387,22 @@ class SpotifyApi
      */
     private function _request(string $method, string $url, array|string $data = [])
     {
-        do{
-            try{
+        do {
+            try {
                 $result = $this->_send($method, $url, $data);
-            }
-            catch(\Exception $e){
-                if(!$this->shouldRetry())
+            } catch (\Exception $e) {
+                if (!$this->shouldRetry())
                     throw $e;
-            };
+            }
+            ;
         }
-        while($this->shouldRetry());
-        
+        while ($this->shouldRetry());
+
         $this->_clearOptions();
 
-        if($result->getStatusCode() === 200);
-            return $result->getJson();
+        if ($result->getStatusCode() === 200)
+            ;
+        return $result->getJson();
     }
 
     /**
@@ -421,12 +423,21 @@ class SpotifyApi
      */
     public function shouldRetry()
     {
-        if($this->_retry)
-        {
+        if ($this->_retry) {
             $this->_retry = false;
             return true;
         }
         return false;
+    }
+
+    private function _addMarket(array|string $data)
+    {
+        if(is_string($data))
+            $data .= '&market='.$this->market;
+        else
+            $data['market'] = $this->market;
+
+        return $data;
     }
 
     /**
@@ -442,14 +453,16 @@ class SpotifyApi
     {
         $this->_setOptions();
 
-        $response = match(strtoupper($method))
-        {
+        if(preg_match('/\/tracks/', $url))
+            $data = $this->_addMarket($data);
+
+        $response = match (strtoupper($method)) {
             'GET' => $this->getClient()->get($url, $data, $this->_options),
             'POST' => $this->getClient()->post($url, $data, $this->_options),
             'DELETE' => $this->getClient()->delete($url, $data, $this->_options),
         };
 
-        if($response->getStatusCode() >= 400)
+        if ($response->getStatusCode() >= 400)
             $this->_handleError($response);
 
         return $response;
@@ -462,8 +475,8 @@ class SpotifyApi
      */
     private function _setOptions()
     {
-        if(!isset($this->_options['headers']) && empty($this->_headers))
-            $this->_addHeaders(['Authorization' => 'Bearer '.$this->getAccessToken()]);
+        if (!isset($this->_options['headers']) && empty($this->_headers))
+            $this->_addHeaders(['Authorization' => 'Bearer ' . $this->getAccessToken()]);
 
         $this->_options['headers'] = $this->_headers;
     }
@@ -515,32 +528,34 @@ class SpotifyApi
                 if ($this->_refreshTokens())
                     $this->retry();
                 else
-                    $exception =  new UnauthorizedException(__('Access revoked. Please login.'));
+                    $exception = new UnauthorizedException(__('Access revoked. Please login.'));
                 break;
             case 429:
                 $sleep = (int) $response->getHeader('retry-after')[0];
 
-                if ($sleep >= 30)
-                    $exception =  new HttpException(__("Too many requests. Wait for {0} seconds.", $sleep), 429);
+                if ($sleep >= 30) {
+                    $exception = new HttpException(__("Too many requests. Wait for {0} seconds.", $sleep), 429);
+                    break;
+                }
 
                 sleep($sleep);
                 $this->retry();
                 break;
             case 503:
-                $exception =  new ServiceUnavailableException(__('Spotify API is currently unavailable. Try again later.'));
-            break;
+                $exception = new ServiceUnavailableException(__('Spotify API is currently unavailable. Try again later.'));
+                break;
             case 400:
-                $exception =  new BadRequestException();
+                $exception = new BadRequestException();
                 break;
             case 403:
-                $exception =  new ForbiddenException(__('Scope not authorized.'));
+                $exception = new ForbiddenException(__('Scope not authorized.'));
                 break;
             default:
-                $exception =  new HttpException($response->getStatusCode() . ' - ' . $response->getReasonPhrase(), $response->getStatusCode());
-            break;
+                $exception = new HttpException($response->getStatusCode() . ' - ' . $response->getReasonPhrase(), $response->getStatusCode());
+                break;
         }
 
-        if($exception)
+        if ($exception)
             throw $exception;
     }
 
@@ -564,12 +579,11 @@ class SpotifyApi
      * @return void
      */
     public function retry()
-    {   
+    {
         $this->_retry = true;
         $this->_retryCount++;
 
-        if($this->_retryCount > self::MAX_RETRY_NUMBER)
-        {
+        if ($this->_retryCount > self::MAX_RETRY_NUMBER) {
             $this->_retry = false;
             throw new \Exception('Max request retries reached.');
         }
@@ -658,8 +672,8 @@ class SpotifyApi
     public function getPlaylist(string $playlistId, string $fields = '')
     {
         $options = $fields !== '' ? ['fields' => $fields] : [];
-        
-        return $this->_request('GET', self::API_URL.'/v1/playlists/'.$playlistId, $options);
+
+        return $this->_request('GET', self::API_URL . '/v1/playlists/' . $playlistId, $options);
     }
 
     /**
@@ -684,9 +698,9 @@ class SpotifyApi
      */
     public function getPlaylistTracks(string $playlistId, string $fields = '')
     {
-        $options = $fields !== '' ? ['fields' => 'next, items('.$fields.')'] : [];
-        
-        $url = $this->getClient()->buildUrl(self::API_URL.'/v1/playlists/'.$playlistId.'/tracks', $options);
+        $options = $fields !== '' ? ['fields' => 'next, items(' . $fields . ')'] : [];
+
+        $url = $this->getClient()->buildUrl(self::API_URL . '/v1/playlists/' . $playlistId . '/tracks', $options);
 
         return $this->_batchRetrieveData($url, 'GET');
     }
@@ -782,7 +796,7 @@ class SpotifyApi
      */
     public function getTrack(string $trackId)
     {
-        return $this->_request('GET', self::API_URL.'/v1/tracks/'.$trackId);
+        return $this->_request('GET', self::API_URL . '/v1/tracks/' . $trackId);
     }
 
     /**
@@ -797,11 +811,10 @@ class SpotifyApi
         $tracks = array_chunk($tracks, 50);
         $result = [];
 
-        foreach($tracks as $chunk)
-        {
-            $result = array_merge($result, $this->_request('GET', self::API_URL.'/v1/tracks/', ['ids' => implode(',', $chunk)])['tracks']);
+        foreach ($tracks as $chunk) {
+            $result = array_merge($result, $this->_request('GET', self::API_URL . '/v1/tracks/', ['ids' => implode(',', $chunk)])['tracks']);
         }
-        
+
         return $result;
     }
 
@@ -813,9 +826,9 @@ class SpotifyApi
     public function getLeastPopularArtist()
     {
         $url = $this->getTop('artists', 'long_term', 50)['href'];
-        $items =  $this->_batchRetrieveData($url); 
+        $items = $this->_batchRetrieveData($url);
 
-        usort($items, function($a, $b){
+        usort($items, function ($a, $b) {
             return $a['popularity'] <=> $b['popularity'];
         });
 
@@ -835,7 +848,7 @@ class SpotifyApi
      */
     public function getRecentlyPlayedTracks(int $limit = 20, ?int $after = null, ?int $before = null)
     {
-        if($after !== null && $before !== null)
+        if ($after !== null && $before !== null)
             throw new InvalidArgumentException(__('One of cursor positions must be empty'));
 
         $data = [
@@ -844,8 +857,8 @@ class SpotifyApi
             'before' => $before
         ];
 
-        $url =  $this->getClient()->buildUrl(self::API_URL.'/v1/me/player/recently-played', $data);
-        
+        $url = $this->getClient()->buildUrl(self::API_URL . '/v1/me/player/recently-played', $data);
+
         return $this->_batchRetrieveData($url);
     }
 }
