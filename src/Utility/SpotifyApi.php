@@ -51,7 +51,7 @@ class SpotifyApi
     private string $_redirectUri;
 
     /**
-     * URL to account 
+     * URL to account
      * @var string
      */
     public const ACCOUNT_URL = "https://accounts.spotify.com";
@@ -92,20 +92,25 @@ class SpotifyApi
      */
     private const MAX_RETRY_NUMBER = 3;
 
+    private bool $_useMarket = false;
+
     private string $market = 'from_token';
 
     /**
      * Constructor
-     * 
+     *
      * @param string $clientId
      * @param string $clientSecret
      * @param string $redirectUri
      */
-    public function __construct(string $clientId, string $clientSecret, string $redirectUri)
+    public function __construct(string $clientId, string $clientSecret, string $redirectUri, ?bool $useMarket)
     {
         $this->_clientId = $clientId;
         $this->_clientSecret = $clientSecret;
         $this->_redirectUri = $redirectUri;
+
+        if($useMarket == true)
+            $this->_useMarket = true;
 
         $this->_options = [];
         $this->_headers = [];
@@ -113,14 +118,19 @@ class SpotifyApi
         $this->_httpClient = new Client();
     }
 
+    public function setMarket(bool $useMarket)
+    {
+        $this->_useMarket = $useMarket;
+    }
+
     /**
      * Build Authorization URL
-     * 
+     *
      * @param array $options Optional. Set options
      * - scope - Set one or more scopes to request from user. Optional - If no scopes then grant access to only public information
      * - state - CSRF Token. Optional
      * - show_dialog - Whether or not to force the user to approve the app again if they’ve already done so. Optional - Default false
-     * 
+     *
      * @return string Authorization URL
      */
     public function getAuthorizeUrl(array $options = [])
@@ -140,9 +150,9 @@ class SpotifyApi
 
     /**
      * Requests Access Token and other data from Spotify API
-     * 
+     *
      * @param string $code Authorization Code returned after successful log in through Authorization URL
-     * 
+     *
      * @return void
      */
     public function requestAccessToken(string $code)
@@ -161,7 +171,7 @@ class SpotifyApi
      * Sends request to Token endpoint
      *
      *  @param array $data
-     * 
+     *
      * @return void
      */
     private function sendTokenRequest($data)
@@ -183,7 +193,7 @@ class SpotifyApi
 
     /**
      * Refreshes token from Spotify API
-     * 
+     *
      * @return bool
      */
     private function _refreshTokens()
@@ -201,14 +211,14 @@ class SpotifyApi
 
     /**
      * Get the current user's top artists or tracks based on calculated affinity.
-     * 
+     *
      * @param string $type The type of entity to return. Valid values: artists or tracks
      * @param string $time_range Over what time frame the affinities are computed. Valid values: long_term (calculated from ~1 year of data and including all new data as it becomes available), medium_term (approximately last 6 months), short_term (approximately last 4 weeks). Default: medium_term
      * @param int $limit The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
      * @param int $offset The index of the first item to return. Default: 0 (the first item). Use with limit to get the next set of items.
-     * 
+     *
      * @throws \Exception Thrown when unsupported type
-     * 
+     *
      * @return array
      */
     public function getTop(string $type, string $time_range = 'medium_term', int $limit = 20, int $offset = 0): array
@@ -221,7 +231,7 @@ class SpotifyApi
 
     /**
      * Get user profile
-     * 
+     *
      * @return array
      */
     public function getProfile()
@@ -231,7 +241,7 @@ class SpotifyApi
 
     /**
      * Get currently playing song
-     * 
+     *
      * @return array
      */
     public function getCurrentlyPlaying()
@@ -241,7 +251,7 @@ class SpotifyApi
 
     /**
      * Get a list of all songs saved in the current Spotify user's 'Your Music' library.
-     * 
+     *
      * @return array
      */
     public function getAllSavedTracks()
@@ -252,10 +262,10 @@ class SpotifyApi
 
     /**
      * Get a list of the songs saved in the current Spotify user's 'Your Music' library.
-     * 
+     *
      * @param int $limit The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
      * @param mixed $offset The index of the first item to return. Default: 0 (the first item). Use with limit to get the next set of items.
-     * 
+     *
      * @return array
      */
     public function getSavedTracks(int $limit = 20, int $offset = 0)
@@ -265,10 +275,10 @@ class SpotifyApi
 
     /**
      * Get a list of the playlists owned or followed by the current Spotify user.
-     * 
+     *
      * @param int $limit The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
      * @param int $offset The index of the first playlist to return. Default: 0 (the first object). Maximum offset: 100.000. Use with limit to get the next set of playlists.'
-     * 
+     *
      * @return array
      */
     public function getPlaylists(int $limit = 20, int $offset = 0)
@@ -278,7 +288,7 @@ class SpotifyApi
 
     /**
      * Get a list of all playlists owned or followed by the current Spotify user.
-     * 
+     *
      * @return array
      */
     public function getAllPlaylists()
@@ -292,7 +302,7 @@ class SpotifyApi
      * Get a list of all playlists owned by the current Spotify user.
      *
      * @param int $ownerId Need to compare with playlist owner ID
-     * 
+     *
      * @return array
      */
     public function getOwnedPlaylists(int $ownerId)
@@ -307,11 +317,11 @@ class SpotifyApi
 
     /**
      * Batch retrieve all data from any given URL which returns 'next' url (eg. Playlists)
-     * 
+     *
      * @param string $url URL used in request
      * @param string $method Method used in request. GET or POST. Default GET
      * @param string $path Dot-notated path
-     * 
+     *
      * @return array
      */
     private function _batchRetrieveData(string $url, string $method = 'GET', string $path = '')
@@ -334,7 +344,7 @@ class SpotifyApi
 
     /**
      * Helper function to retrieve a value from a nested array using a dot-notated path.
-     * 
+     *
      * @param array $array Source array
      * @param string $path Dot-notated path (e.g. 'tracks.items')
      *
@@ -364,10 +374,10 @@ class SpotifyApi
 
     /**
      * Sets tokens from user data
-     * 
+     *
      * @param string $accessToken
      * @param string $refreshToken
-     * 
+     *
      * @return void
      */
     public function setTokensOfUser(string $accessToken, string $refreshToken)
@@ -378,11 +388,11 @@ class SpotifyApi
 
     /**
      * Handles requests
-     * 
+     *
      * @param string $method
      * @param string $url
      * @param array|string $data
-     * 
+     *
      * @return array
      */
     private function _request(string $method, string $url, array|string $data = [])
@@ -407,7 +417,7 @@ class SpotifyApi
 
     /**
      * Clears options and headers param
-     * 
+     *
      * @return void
      */
     private function _clearOptions()
@@ -418,7 +428,7 @@ class SpotifyApi
 
     /**
      * Returns if request should be retried and changes state if needed
-     * 
+     *
      * @return bool
      */
     public function shouldRetry()
@@ -432,6 +442,9 @@ class SpotifyApi
 
     private function _addMarket(array|string $data)
     {
+        if($this->_useMarket == false)
+            return $data;
+
         if(is_string($data))
             $data .= '&market='.$this->market;
         else
@@ -442,11 +455,11 @@ class SpotifyApi
 
     /**
      * Send request to the Spotify API
-     * 
+     *
      * @param string $method GET/POST
      * @param string $url URL to the endpoint after API_URL
      * @param array|string $data Optional. Data to send with request
-     * 
+     *
      * @return \Cake\Http\Client\Response
      */
     private function _send(string $method, string $url, array|string $data = [])
@@ -470,7 +483,7 @@ class SpotifyApi
 
     /**
      * Prepares options to send with API
-     * 
+     *
      * @return void
      */
     private function _setOptions()
@@ -483,9 +496,9 @@ class SpotifyApi
 
     /**
      * Adds options which will be used in request to API
-     * 
+     *
      * @param array $option
-     * 
+     *
      * @return void
      */
     private function _addOptions(array $option)
@@ -495,9 +508,9 @@ class SpotifyApi
 
     /**
      * Add headers which will be used in request to API
-     * 
+     *
      * @param array $headers
-     * 
+     *
      * @return void
      */
     private function _addHeaders(array $headers)
@@ -507,16 +520,16 @@ class SpotifyApi
 
 
     /**
-     * 
+     *
      * Handles error based on the response status code
-     * 
+     *
      * @param \Cake\Http\Client\Response $response
-     * 
+     *
      * @throws \Cake\Http\Exception\UnauthorizedException
      * @throws \Cake\Http\Exception\HttpException
      * @throws \Cake\Http\Exception\ServiceUnavailableException
      * @throws \Cake\Http\Exception\BadRequestException
-     * 
+     *
      * @return void
      */
     private function _handleError(\Cake\Http\Client\Response $response)
@@ -561,9 +574,9 @@ class SpotifyApi
 
     /**
      * Set Access Token
-     * 
+     *
      * @param string $accessToken
-     * 
+     *
      * @return void
      */
     private function _setAccessToken($accessToken)
@@ -573,9 +586,9 @@ class SpotifyApi
 
     /**
      * Sets retry value and increments counter of retries. Throws exception when limit of retries reached
-     * 
+     *
      * @throws \Exception
-     * 
+     *
      * @return void
      */
     public function retry()
@@ -591,7 +604,7 @@ class SpotifyApi
 
     /**
      * Get Access Token
-     * 
+     *
      * @return string
      */
     public function getAccessToken()
@@ -601,7 +614,7 @@ class SpotifyApi
 
     /**
      * Get Refresh Token
-     * 
+     *
      * @return string
      */
     public function getRefreshToken()
@@ -611,9 +624,9 @@ class SpotifyApi
 
     /**
      * Set Refresh Token
-     * 
+     *
      * @param string $refreshToken
-     * 
+     *
      * @return void
      */
     private function _setRefreshToken($refreshToken)
@@ -623,7 +636,7 @@ class SpotifyApi
 
     /**
      * Get Client ID
-     * 
+     *
      * @return string
      */
     public function getClientId()
@@ -633,7 +646,7 @@ class SpotifyApi
 
     /**
      * Get Redirect URI
-     * 
+     *
      * @return string
      */
     public function getRedirectUri()
@@ -643,7 +656,7 @@ class SpotifyApi
 
     /**
      * Get HTTP Client
-     * 
+     *
      * @return Client
      */
     public function getClient()
@@ -653,7 +666,7 @@ class SpotifyApi
 
     /**
      * Get Client Secret
-     * 
+     *
      * @return string
      */
     public function getClientSecret()
@@ -663,10 +676,10 @@ class SpotifyApi
 
     /**
      * Get a playlist owned by a Spotify user.
-     * 
+     *
      * @param string $playlistId The Spotify ID of the playlist.
      * @param string $fields Optional. Filters for the query: a comma-separated list of the fields to return. If omitted, all fields are returned. For example, to get just the playlist''s description and URI: fields=description,uri. A dot separator can be used to specify non-reoccurring fields, while parentheses can be used to specify reoccurring fields within objects. For example, to get just the added date and user ID of the adder: fields=tracks.items(added_at,added_by.id). Use multiple parentheses to drill down into nested objects, for example: fields=tracks.items(track(name,href,album(name,href))). Fields can be excluded by prefixing them with an exclamation mark, for example: fields=tracks.items(track(name,href,album(!name,href)))
-     * 
+     *
      * @return array
      */
     public function getPlaylist(string $playlistId, string $fields = '')
@@ -678,9 +691,9 @@ class SpotifyApi
 
     /**
      * Get snapshot ID of a playlist.
-     * 
+     *
      * @param string $playlistId The Spotify ID of the playlist.
-     * 
+     *
      * @return string
      */
     public function getPlaylistSnapshotId(string $playlistId)
@@ -690,10 +703,10 @@ class SpotifyApi
 
     /**
      * Get full details of the items of a playlist owned by a Spotify user.
-     * 
+     *
      * @param string $playlistId The Spotify ID of the playlist.
      * @param string $fields Optional. Filters for the query: a comma-separated list of the fields to return. If omitted, all fields are returned. For example, to get just the playlist''s description and URI: fields=description,uri. A dot separator can be used to specify non-reoccurring fields, while parentheses can be used to specify reoccurring fields within objects. For example, to get just the added date and user ID of the adder: fields=tracks.items(added_at,added_by.id). Use multiple parentheses to drill down into nested objects, for example: fields=tracks.items(track(name,href,album(name,href))). Fields can be excluded by prefixing them with an exclamation mark, for example: fields=tracks.items(track(name,href,album(!name,href)))
-     * 
+     *
      * @return array
      */
     public function getPlaylistTracks(string $playlistId, string $fields = '')
@@ -707,18 +720,18 @@ class SpotifyApi
 
     /**
      * Modify playlist according to method parameter
-     * 
+     *
      * @param string $method HTTP method (POST for add, DELETE for remove)
      * @param string $playlistId The Spotify ID of the playlist.
      * @param array $tracks Array of track URIs
-     * 
+     *
      * @param array $options Optional. Can be:
-     * 
+     *
      * - prepend - Prepends tracks to the playlist
-     * 
-     * @throws \InvalidArgumentException 
-     * 
+     *
      * @return bool|null
+     *@throws InvalidArgumentException|\Exception
+     *
      */
     private function _modifyPlaylistTracks(string $method, string $playlistId, array $tracks, array $options = [])
     {
@@ -761,11 +774,11 @@ class SpotifyApi
 
     /**
      * Add tracks to playlist
-     * 
+     *
      * @param string $playlistId The Spotify ID of the playlist.
      * @param array $tracks Array of track URIs
      * @param bool $prepend If set to true will prepend tracks to the playlist
-     * 
+     *
      * @return bool|null
      */
     public function addTracksToPlaylist(string $playlistId, array $tracks, bool $prepend = false)
@@ -776,10 +789,10 @@ class SpotifyApi
 
     /**
      * Delete tracks from playlist
-     * 
+     *
      * @param string $playlistId The Spotify ID of the playlist.
      * @param array $tracks Array of track URIs
-     * 
+     *
      * @return bool|null
      */
     public function deleteTracksFromPlaylist(string $playlistId, array $tracks)
@@ -789,9 +802,9 @@ class SpotifyApi
 
     /**
      * Get Spotify catalog information for a single track identified by its unique Spotify ID.
-     * 
+     *
      * @param string $trackId The Spotify ID for the track.
-     * 
+     *
      * @return array
      */
     public function getTrack(string $trackId)
@@ -800,10 +813,10 @@ class SpotifyApi
     }
 
     /**
-     * Get Spotify catalog information for multiple tracks based on their Spotify IDs. 
-     * 
+     * Get Spotify catalog information for multiple tracks based on their Spotify IDs.
+     *
      * @param array $tracks Array of track IDs
-     * 
+     *
      * @return array
      */
     public function getMultipleTracks(array $tracks)
@@ -820,7 +833,7 @@ class SpotifyApi
 
     /**
      * Get the current user's least popular artist from top artists list
-     * 
+     *
      * @return array
      */
     public function getLeastPopularArtist()
@@ -837,13 +850,13 @@ class SpotifyApi
 
     /**
      * Get tracks from the current user's recently played tracks.
-     * 
+     *
      * @param int $limit The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
      * @param int|null $after A Unix timestamp in milliseconds. Returns all items after (but not including) this cursor position. If after is specified, before must not be specified.
      * @param int|null $before A Unix timestamp in milliseconds. Returns all items before (but not including) this cursor position. If before is specified, after must not be specified.
-     * 
+     *
      * @throws InvalidArgumentException
-     * 
+     *
      * @return array
      */
     public function getRecentlyPlayedTracks(int $limit = 20, ?int $after = null, ?int $before = null)

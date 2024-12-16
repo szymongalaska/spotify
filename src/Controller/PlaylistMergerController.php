@@ -161,7 +161,7 @@ class PlaylistMergerController extends PlaylistController
             if($track['track']['id'] !== null)
                 return !in_array($track['track']['id'], $sourceTracksIds);
         });
-
+        
         // Remove/add tracks that are not in Saved Tracks
         if($options['savedTracks'] == true){
             $savedTracks = $this->getUserSavedTracks(); 
@@ -175,8 +175,8 @@ class PlaylistMergerController extends PlaylistController
                 if($track['track']['id'] !== null)
                     return !in_array($track['track']['id'], $savedTracksIds);
             }));
-        }
-
+        }   
+        
         if(!empty($tracksToAdd))
         {
             if($options['prepend'] == true)

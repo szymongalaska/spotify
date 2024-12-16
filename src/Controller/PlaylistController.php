@@ -45,7 +45,7 @@ class PlaylistController extends MainController
      */
     public function viewNotAvailableTracks(string $playlistId)
     {
-        
+        $this->getApi()->setMarket(true);
         $playlist = $this->getPlaylist($playlistId);
         $tracks =  $this->getApi()->getPlaylistTracks($playlistId);
         $playlist['tracks'] = $this->filterAvailableTracks($tracks);

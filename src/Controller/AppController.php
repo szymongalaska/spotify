@@ -48,7 +48,7 @@ class AppController extends Controller
     {
         parent::initialize();
 
-        $this->_api = new SpotifyApi(env('CLIENT_ID'), env('CLIENT_SECRET'), env('REDIRECT_URI'));
+        $this->_api = new SpotifyApi(env('CLIENT_ID'), env('CLIENT_SECRET'), env('REDIRECT_URI'), false);
         $this->loadComponent('Flash');
 
         /*
