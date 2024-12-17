@@ -31,6 +31,12 @@ use Cake\View\Exception\MissingTemplateException;
  */
 class PagesController extends AppController
 {
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+    {
+        if($this->getRequest()->getSession()->check('user'))
+            return $this->redirect(['controller' => 'Main', 'action' => 'dashboard']);
+    }
+    
     /**
      * Displays a view
      *
