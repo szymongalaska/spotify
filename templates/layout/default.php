@@ -33,24 +33,21 @@
     <?= $this->fetch('script') ?>
 </head>
 <body>
+    <div class="top-nav-links mobile-menu mobile">
+        <?= $this->Html->link('<span class="material-symbols-outlined">arrow_menu_close</span>'.__('Hide menu'), '#', ['class' => 'mobile-menu-hide', 'escape' => false]) ?>
+        <?php echo $this->element('menu') ?>
+    </div>
     <nav class="top-nav">
-        <div id="current-song">
+        <div class="top-nav-links mobile">
+            <?= $this->Html->link('<span class="material-symbols-outlined">menu</span>Menu', '#', ['class' => 'mobile-menu-show', 'escape' => false]) ?>
+        </div>
+        <div id="current-song" class="desktop">
             <?php if($current_song): ?>
                 <?php echo $this->element('song', ['track' => $current_song['item'], 'playing' => true]) ?>
             <?php endif; ?>
         </div>
-        <div class="top-nav-links">
-            <?= $this->Html->link('<span class="material-symbols-outlined">home</span>'.__('Home'), ['controller' => 'Main', 'action' => 'dashboard'], ['escape' => false]) ?>
-            <div class="dropdown">
-                <?= $this->Html->link('<span class="material-symbols-outlined">queue_music</span>'.__('Playlists'), '#', ['escape' => false]) ?>
-                <div class="dropdown-menu">
-                    <?= $this->Html->link('<span class="material-symbols-outlined">preview</span>'.__('View playlist'), ['controller' => 'Playlist', 'action' => 'find'], ['escape' => false]) ?>
-                    <?= $this->Html->link('<span class="material-symbols-outlined">play_disabled</span>'.__('List of unavailable tracks'), ['controller' => 'Playlist', 'action' => 'viewNotAvailable'], ['escape' => false]) ?>
-                    <?= $this->Html->link('<span class="material-symbols-outlined">merge</span>'.__('Merge playlists'), ['controller' => 'PlaylistMerger', 'action' => 'index'], ['escape' => false]) ?>
-                    <?= $this->Html->link('<span class="material-symbols-outlined">sync</span>'.__('Synchronize playlists'), ['controller' => 'PlaylistMerger', 'action' => 'synchronize'], ['escape' => false]) ?>
-                </div>
-            </div>
-            <?= $this->Html->link('<span class="material-symbols-outlined">logout</span>'.__('Logout'), ['controller' => 'Main', 'action' => 'logout'], ['escape' => false]); ?>
+        <div class="top-nav-links desktop">
+           <?php echo $this->element('menu') ?>
         </div>
         <div class="top-nav-user">
                 <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
@@ -92,6 +89,21 @@
 
                     $('form').on('submit', function(){
                         loader('body');
+                    });
+
+                    $('a.mobile-menu-show').on('click', function(){
+                        $('div.mobile-menu').show();
+                        $('div.mobile-menu').animate({
+                            width: '80%',
+                        }, 200);
+                    });
+
+                    $('a.mobile-menu-hide').on('click', function(){
+                        $('div.mobile-menu').animate({
+                            width: 0,
+                        }, 200, function(){
+                            $(this).hide();
+                        });
                     });
                 })
         </script>

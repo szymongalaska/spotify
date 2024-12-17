@@ -13,7 +13,7 @@
     </div>
     <div class="column" style="display: flex; flex-direction: column; justify-content: center">
         <div class="row">
-            <span style="font-size: 1.2rem;"><?php
+            <span class="artist-name"><?php
             foreach ($track['artists'] as $artist):
                 $artists[] = $artist['name'];
                 ?>
@@ -22,7 +22,7 @@
             </span>
         </div>
         <div class="row">
-            <span style="font-weight: 600; font-size: 2rem;"><?= h($track['name']) ?></span>
+            <span class="track-name"><?= h($track['name']) ?></span>
         </div>
     </div>
 </div>

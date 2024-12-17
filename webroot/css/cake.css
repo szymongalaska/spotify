@@ -362,7 +362,7 @@ input[type='color'] {
 
     /* Fix milligram not having a responsive column system */
     .row .column[class*='column-'] {
-        flex: 0 0 100%;
+        flex: 0 0 30%;
         max-width: 100%
     }
 
@@ -737,17 +737,119 @@ div.dropdown-menu a {
     transform: translateX(-50%);
 }
 
-span.material-symbols-outlined.delete:hover
-{
+span.material-symbols-outlined.delete:hover {
     color: #cd101e;
 }
 
-div.song.unavailable
-{
+div.song.unavailable {
     opacity: 0.3;
 }
 
-div.input.select:has(select#playlist-merger-cronjob-frequency)
-{
+div.input.select:has(select#playlist-merger-cronjob-frequency) {
     display: none;
+}
+
+@media screen and (max-width: 640px) {
+    .desktop {
+        display: none !important;
+    }
+
+    .mobile {
+        display: initial;
+    }
+
+    nav.top-nav>div.mobile {
+        width: 50%;
+    }
+
+    div.mobile-menu {
+        background: var(--color-dark-bg);
+        color: #fff;
+        z-index: 999;
+        width: 80%;
+        display: block;
+        position: fixed;
+        height: 100%;
+    }
+
+    div.mobile-menu a {
+        color: #fff;
+    }
+
+    div.mobile-menu div.dropdown div.dropdown-menu {
+        width: 90%;
+        position: relative;
+    }
+
+    a.mobile-menu-hide {
+        font-size: 1.5rem;
+        font-weight: 100;
+        padding: 2rem !important;
+        justify-content: flex-end;
+    }
+
+    a.mobile-menu-hide span.material-symbols-outlined {
+        font-size: 1.5rem;
+    }
+
+    div.top-nav-links a:not(div.dropdown-menu a) {
+        gap: 1rem;
+        flex-direction: row;
+        margin-left: 1rem;
+    }
+
+    div.row.song,
+    div.row.artist,
+    div.row.playlist,
+    div.row.playlist-header {
+        flex-direction: row;
+    }
+
+    div.row.playlist-header h3 {
+        font-size: 2rem;
+    }
+
+    div.row.playlist-header .column[class*='column-'] {
+        flex: 0 0 35%;
+    }
+
+    div.content {
+        margin: 0;
+    }
+
+    span.track-name {
+        font-size: 1.5rem;
+    }
+
+    span.artist-name {
+        font-size: 1rem;
+    }
+}
+
+@media screen and (min-width: 641px) {
+    .desktop {
+        display: initial;
+    }
+
+    .mobile {
+        display: none !important;
+    }
+
+    span.track-name {
+        font-size: 2rem;
+    }
+    
+    span.artist-name {
+        font-size: 1.2rem;
+    }
+}
+
+div.mobile-menu {
+    width: 0;
+    display: none;
+}
+
+span.track-name
+{
+    font-weight: 600;
 }

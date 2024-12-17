@@ -132,3 +132,6 @@ msgstr "Wystąpił błąd podczas wyłączania auto synchronizacji"
 
 msgid "Merge deleted"
 msgstr "Usunięto scalenie"
+
+msgid "Hide menu"
+msgstr "Ukryj menu"
