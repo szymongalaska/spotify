@@ -572,9 +572,7 @@ div.content ul {
     display: none;
 }
 
-div.playlistMerger div.content.list.playlists {
-    width: 45%;
-}
+
 
 div.content.list.playlists ul {
     max-height: 35rem;
@@ -801,7 +799,8 @@ div.input.select:has(select#playlist-merger-cronjob-frequency) {
     div.row.song,
     div.row.artist,
     div.row.playlist,
-    div.row.playlist-header {
+    div.row.playlist-header,
+    div.list.playlists div.row {
         flex-direction: row;
     }
 
@@ -814,7 +813,7 @@ div.input.select:has(select#playlist-merger-cronjob-frequency) {
     }
 
     div.content {
-        margin: 0;
+        margin: 2rem 0;
     }
 
     span.track-name {
@@ -824,6 +823,12 @@ div.input.select:has(select#playlist-merger-cronjob-frequency) {
     span.artist-name {
         font-size: 1rem;
     }
+
+    div.playlistMerger div.row.playlist
+    {
+        gap: 1rem;
+    }
+
 }
 
 @media screen and (min-width: 641px) {
@@ -841,6 +846,21 @@ div.input.select:has(select#playlist-merger-cronjob-frequency) {
     
     span.artist-name {
         font-size: 1.2rem;
+    }
+}
+
+@media screen and (min-width: 768px)
+{
+    div.playlistMerger div.content.list.playlists {
+        width: 45%;
+    }
+}
+
+@media screen and (max-width: 767px)
+{
+    div.playlistMerger div.playlists-container
+    {
+        flex-direction: column;
     }
 }
 

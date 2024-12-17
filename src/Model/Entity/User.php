@@ -9,7 +9,7 @@ use Cake\ORM\Entity;
  * User Entity
  *
  * @property int $id
- * @property int $spotify_id
+ * @property string $spotify_id
  * @property string $display_name
  * @property string|null $image_url
  * @property string|null $access_token

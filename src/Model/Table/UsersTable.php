@@ -59,7 +59,8 @@ class UsersTable extends Table
     public function validationDefault(Validator $validator): Validator
     {
         $validator
-            ->nonNegativeInteger('spotify_id')
+            ->scalar('spotify_id')
+            ->maxLength('spotify_id', 100)
             ->requirePresence('spotify_id', 'create')
             ->notEmptyString('spotify_id');
 
