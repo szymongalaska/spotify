@@ -12,7 +12,11 @@
                 <?= $this->Form->select('term', ['short_term' => __("{0,plural,=1{Last month} other{Last # months}}", 1), 'medium_term' => __("{0,plural,=1{Last month} other{Last # months}}", 6), 'long_term' => __('{0,plural,=1{Last year} other{Last # years}}', 1)], ['default' => 'medium_term']); ?>
             </p>
         </div>
-        <?php echo $this->element('tracks', ['topTracks' => $topTracks]); ?>
+        <?php if(!empty($topTracks['items'])): ?>
+            <?php echo $this->element('tracks', ['topTracks' => $topTracks]); ?>
+        <?php else: ?>
+            <p class="message"><?= __('Your top tracks list is empty - listen to some music!') ?></p>
+        <?php endif; ?>
     </div>
 
     <div class="content list top-artists">
@@ -22,7 +26,11 @@
                 <?= $this->Form->select('term', ['short_term' => __("{0,plural,=1{Last month} other{Last # months}}", 1), 'medium_term' => __("{0,plural,=1{Last month} other{Last # months}}", 6), 'long_term' => __('{0,plural,=1{Last year} other{Last # years}}', 1)], ['default' => 'medium_term']); ?>
             </p>
         </div>
-        <?php echo $this->element('artists', ['topArtists' => $topArtists]); ?>
+        <?php if(!empty($topArtists['items'])): ?>
+            <?php echo $this->element('artists', ['topArtists' => $topArtists]); ?>
+        <?php else: ?>
+            <p class="message"><?= __('Your top artists list is empty - listen to some music!') ?></p>
+        <?php endif; ?>
     </div>
 
 </div>

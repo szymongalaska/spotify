@@ -6,6 +6,7 @@
 ?>
 <div class="content list playlists">
     <h3><?= __('Select playlist') ?></h3>
+    <?php if(!empty($playlists)): ?>
     <ul>
         <?php foreach ($playlists as $playlist): ?>
             <li><a
@@ -13,4 +14,7 @@
             </li>
         <?php endforeach; ?>
     </ul>
+    <?php else: ?>
+        <p class="message"><?= __('There are no playlists to display') ?></p>
+    <?php endif; ?>
 </div>

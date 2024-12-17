@@ -6,6 +6,7 @@
 <div class="playlistMerger">
     <div class="content">
         <h3><?= __('Your merged playlists') ?></h3>
+        <?php if(!empty($playlists)): ?>
         <div class="list playlists">
             <ul>
                 <?php foreach ($playlists as $playlist): ?>
@@ -25,6 +26,9 @@
                 <?php endforeach; ?>
             </ul>
         </div>
+        <?php else: ?>
+            <p class="message"><?= __("Currently you don't have any merges") ?></p>
+        <?php endif; ?>
         <div class="row">
             <div class="column" style="display: flex; justify-content: center; align-items: center;">
                 <?= $this->Html->link(__('Create new merge'), ['action' => 'add'], ['class' => 'button']) ?>

@@ -50,7 +50,11 @@
            <?php echo $this->element('menu') ?>
         </div>
         <div class="top-nav-user">
-                <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
+                <?php if($this->getRequest()->getSession()->read('user')['image_url']): ?>
+                    <?= $this->Html->image($this->getRequest()->getSession()->read('user')['image_url'], ['class' => 'top-nav-profile-picture']); ?>
+                <?php else: ?>
+                    <span class="top-nav-profile-picture material-symbols-outlined">person</span>
+                <?php endif; ?>
                 <span><?= h($this->getRequest()->getSession()->read('user')['display_name']); ?></span>
         </div>
     </nav>

@@ -10,11 +10,15 @@
     <?= $this->Form->control('playlist', ['type' => 'text', 'label' => false]) ?>
     <?= $this->Form->submit(__('Submit')) ?>
     <?= $this->Form->end(); ?>
+    <?php if(!empty($playlists)): ?>
     <ul>
         <?php foreach($playlists as $playlist): ?>
             <li><a href="<?= $this->Url->build(['action' => 'view', $playlist['id']]) ?>"><?php echo $this->element('playlist', ['playlist' => $playlist, 'column' => 'column-10']) ?></a></li>
         <?php endforeach; ?>
     </ul>
+    <?php else: ?>
+        <p class="message"><?= __('There are no playlists to display') ?></p>
+    <?php endif; ?>
 </div>
 
 <script>

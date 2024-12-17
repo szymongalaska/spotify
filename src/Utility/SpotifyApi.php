@@ -301,11 +301,11 @@ class SpotifyApi
     /**
      * Get a list of all playlists owned by the current Spotify user.
      *
-     * @param int $ownerId Need to compare with playlist owner ID
+     * @param string $ownerId Need to compare with playlist owner ID
      *
      * @return array
      */
-    public function getOwnedPlaylists(int $ownerId)
+    public function getOwnedPlaylists(string $ownerId)
     {
         $playlists = $this->getAllPlaylists();
 

@@ -411,12 +411,17 @@ main {
     margin-top: 5%;
 }
 
-img.top-nav-profile-picture {
+img.top-nav-profile-picture, span.top-nav-profile-picture {
     width: 64px;
     height: 64px;
     border: 1px solid #c1c1c1;
     border-radius: 100%;
     padding: 0.5rem;
+}
+
+span.top-nav-profile-picture
+{
+    text-align: center;
 }
 
 .top-nav-user {

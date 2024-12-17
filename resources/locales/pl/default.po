@@ -135,3 +135,21 @@ msgstr "Usunięto scalenie"
 
 msgid "Hide menu"
 msgstr "Ukryj menu"
+
+msgid "Your top tracks list is empty - listen to some music!"
+msgstr "Twoja lista najczęściej słuchanych utworów jest pusta - posłuchaj trochę muzyki!"
+
+msgid "Your top artists list is empty - listen to some music!"
+msgstr "Twoja lista najczęściej słuchanych artystów jest pusta - posłuchaj trochę muzyki!"
+
+msgid "There are no playlists to display"
+msgstr "Brak playlist do wyświetlenia"
+
+msgid "Currently you don't have any merges"
+msgstr "Obecnie nie scalasz żadnych playlist"
+
+msgid "There are not enough playlists to merge"
+msgstr "Za mało playlist by scalić"
+
+msgid "Nothing to synchronize"
+msgstr "Nie ma nic do synchronizacji"

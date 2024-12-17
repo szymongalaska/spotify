@@ -155,6 +155,8 @@ class PlaylistMergerController extends PlaylistController
             foreach($entities as $entity)
                 $this->_mergePlaylists($entity);
         }
+        else
+            $this->Flash->error(__('Nothing to synchronize'));
             
         return $this->redirect($this->getRequest()->referer());
     }
