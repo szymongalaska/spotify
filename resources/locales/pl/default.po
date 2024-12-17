@@ -102,3 +102,33 @@ msgstr "Lista niedostępnych utworów"
 
 msgid "Select playlist"
 msgstr "Wybierz playlistę"
+
+msgid "Synchronization frequency"
+msgstr "Częstotliwość synchronizacji"
+
+msgid "Enable auto synchronization"
+msgstr "Włącz automatyczną synchronizację"
+
+msgid "Once a week (at Sunday)"
+msgstr "Raz w tygodniu (w Niedzielę)"
+
+msgid "Once a day"
+msgstr "Raz dziennie"
+
+msgid "Twice a day"
+msgstr "Dwa razy dziennie"
+
+msgid "Every six hours"
+msgstr "Co sześć godzin"
+
+msgid "Are you sure you want to disable auto synchronization of {0}?"
+msgstr "Czy jesteś pewien, że chcesz usunąć automatyczną synchronizację {0}?"
+
+msgid "Auto synchronization disabled"
+msgstr "Auto synchranizacja wyłączona"
+
+msgid "An error occured while disabling auto synchronization"
+msgstr "Wystąpił błąd podczas wyłączania auto synchronizacji"
+
+msgid "Merge deleted"
+msgstr "Usunięto scalenie"

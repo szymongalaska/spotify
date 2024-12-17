@@ -28,10 +28,11 @@ class PlaylistMergerController extends PlaylistController
             $this->set('userSavedData', $entity);
             $this->set('myPlaylists', $this->getUserPlaylists());
             $this->set('myOwnPlaylists', $this->getUserOwnPlaylists());
+            $this->set('frequency', $entity->playlist_merger_cronjob->frequency ?? null);
     }
 
     /**
-     * Render playlist merger edit view
+     * Render playlist merger add view
      * 
      * @return \Cake\Http\Response|null
      */
@@ -48,7 +49,7 @@ class PlaylistMergerController extends PlaylistController
      */
     private function _getEntity(int $id)
     {
-        $entity = $this->PlaylistMerger->get($id);
+        $entity = $this->PlaylistMerger->get($id, ['contain' => 'PlaylistMergerCronjobs']);
         if($entity->user_id === $this->getRequest()->getSession()->read('user')['id'])
             return $entity;
         else
@@ -61,12 +62,13 @@ class PlaylistMergerController extends PlaylistController
      */
     public function index()
     {
-        $playlists = $this->PlaylistMerger->findByUserId($this->getRequest()->getSession()->read('user')['id'])->select(['id', 'target_playlist_id']);
+        $playlists = $this->PlaylistMerger->findByUserId($this->getRequest()->getSession()->read('user')['id'])->select(['id', 'target_playlist_id', 'PlaylistMergerCronjobs.id'])->contain(['PlaylistMergerCronjobs']);
 
         $playlists = array_map( function($playlist){
             return [
                 'id' => $playlist->id,
                 'playlist' => $this->getPlaylist($playlist->target_playlist_id),
+                'playlist_merger_cronjob' => $playlist->playlist_merger_cronjob
             ];
         }, $playlists->toArray());
 
@@ -95,17 +97,39 @@ class PlaylistMergerController extends PlaylistController
     }
 
     /**
+     * Delete cronjob entity
+     * @param int $id
+     * @return \Cake\Http\Response|null
+     */
+    public function deleteCronjob(int $id)
+    {
+        if (!$entity = $this->_getEntity($id))
+            $this->Flash->error(__('Access denied'));
+        else {
+            if ($this->PlaylistMerger->PlaylistMergerCronjobs->delete($entity->playlist_merger_cronjob))
+                $this->Flash->success(__('Auto synchronization disabled'));
+            else
+                $this->Flash->error(__('An error occured while disabling auto synchronization'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+
+    /**
      * Save form data and merge playlists
      * @return \Cake\Http\Response|null
      */
     public function saveAndMerge()
     {
+
         $options = [
             'prepend' => $this->getRequest()->getData('prepend'),
             'savedTracks' => $this->getRequest()->getData('savedTracks'),
         ];
 
-        $entity = $this->_saveEntity($this->getRequest()->getData('source-playlists'), $this->getRequest()->getData('target-playlist'), $options, $this->getRequest()->getData('entity-id'));
+        $frequency = $this->getRequest()->getData('enable_synchronization') == true ? $this->getRequest()->getData('playlist_merger_cronjob')['frequency'] : null;
+
+        $entity = $this->_saveEntity($this->getRequest()->getData('source-playlists'), $this->getRequest()->getData('target-playlist'), $options, (int) $this->getRequest()->getData('entity-id'), $frequency);
         
         if(!$entity)
         {
@@ -292,12 +316,16 @@ class PlaylistMergerController extends PlaylistController
      * @param array[string] $sourcePlaylists Array with IDs of source playlists
      * @param string $targetPlaylist ID of target playlist
      * @param array $options
+     * @param null|int $entityId ID of entity to edit
+     * @param null|string $cronFrequency Frequency of cronjob
      * @return mixed
      */
-    private function _saveEntity(array $sourcePlaylists, string $targetPlaylist, array $options, mixed $entityId = null)
+    private function _saveEntity(array $sourcePlaylists, string $targetPlaylist, array $options, ?int $entityId = null, ?string $cronFrequency = null)
     {
-        $entity = $entityId ? $this->PlaylistMerger->get($entityId) : $this->PlaylistMerger->newEmptyEntity();
+        $entity = $entityId ? $this->PlaylistMerger->get($entityId, ['contain' => 'PlaylistMergerCronjobs']) : $this->PlaylistMerger->newEmptyEntity();
+        $associated = [];
 
+        
         $data = [
             'user_id' => $this->getRequest()->getSession()->read('user')['id'],
             'source_playlists' => json_encode($sourcePlaylists),
@@ -305,7 +333,12 @@ class PlaylistMergerController extends PlaylistController
             'options' => json_encode($options),
         ];
 
-        $entity = $this->PlaylistMerger->patchEntity($entity, $data);
+        if($cronFrequency){
+            $associated = ['PlaylistMergerCronjobs'];
+            $data['playlist_merger_cronjob'] = ['frequency' => $cronFrequency];
+        }
+
+        $entity = $this->PlaylistMerger->patchEntity($entity, $data, ['associated' => $associated]);
         return $this->PlaylistMerger->save($entity);
     }
 
@@ -321,14 +354,27 @@ class PlaylistMergerController extends PlaylistController
         }, $sourcePlaylists);
     }
 
-    public function cron()
+    /**
+     * Cronjob to synchronize playlists
+     * @param string $frequency Can be:
+     * - weekly
+     * - once_daily
+     * - twice_daily
+     * - four_times_daily
+     * 
+     * @return \Cake\Http\Response
+     */
+    public function cron(string $frequency)
     {
         $this->autoRender = false;
 
         if($this->getRequest()->getQuery('token') !== 'qM7MO43sqOfYRFcDKlBwXuMRxFcTv0RTeURD1iFm0p5Lb7k3f0Fbx2jB8hAMGTX0')
             return $this->response->withStatus(401);
 
-        $users = $this->fetchTable('Users')->find('all')->contain('PlaylistMerger');
+        if(!in_array($frequency, ['weekly', 'once_daily', 'twice_daily', 'four_times_daily']))
+            return $this->response->withStatus(400);
+
+        $users = $this->fetchTable('Users')->find('all')->contain(['PlaylistMerger' => ['PlaylistMergerCronjobs']])->matching('PlaylistMerger.PlaylistMergerCronjobs', function ($query) use($frequency){return $query->where(['frequency' => $frequency]);});
 
         foreach($users as $user)
         {
@@ -348,4 +394,5 @@ class PlaylistMergerController extends PlaylistController
 
         return $this->response->withStatus(200);
     }
+
 }

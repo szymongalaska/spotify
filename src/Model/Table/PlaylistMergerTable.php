@@ -12,6 +12,7 @@ use Cake\Validation\Validator;
  * PlaylistMerger Model
  *
  * @property \App\Model\Table\UsersTable&\Cake\ORM\Association\BelongsTo $Users
+ * @property \App\Model\Table\PlaylistMergerCronjobsTable&\Cake\ORM\Association\HasOne $PlaylistMergerCronjobs
  *
  * @method \App\Model\Entity\PlaylistMerger newEmptyEntity()
  * @method \App\Model\Entity\PlaylistMerger newEntity(array $data, array $options = [])
@@ -49,7 +50,9 @@ class PlaylistMergerTable extends Table
         ]);
 
         $this->hasOne('PlaylistMergerCronjobs',[
-        'foreign_key' => 'id'
+        'foreign_key' => 'id',
+        'dependent' => true,
+        'cascadeCallbacks' => true,
         ]);
     }
 

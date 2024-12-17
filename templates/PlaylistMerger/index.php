@@ -15,6 +15,9 @@
                                     href="<?= $this->Url->build(['action' => 'edit', $playlist['id']]) ?>"><?php echo $this->element('playlist', ['playlist' => $playlist['playlist']]) ?></a>
                             </div>
                             <div class="column column-10">
+                                <?php if (isset($playlist['playlist_merger_cronjob'])): ?>
+                                    <?= $this->Form->postLink('<span class="material-symbols-outlined delete">sync_disabled</span>', ['action' => 'deleteCronjob', $playlist['id']], ['escape' => false, 'confirm' => __('Are you sure you want to disable auto synchronization of {0}?', $playlist['playlist']['name'])]) ?>
+                                <?php endif; ?>
                                 <?= $this->Form->postLink('<span class="material-symbols-outlined delete">delete</span>', ['action' => 'delete', $playlist['id']], ['escape' => false, 'confirm' => __('Are you sure you want to delete merging of {0}?', $playlist['playlist']['name'])]) ?>
                             </div>
                         </div>

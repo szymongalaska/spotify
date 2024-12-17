@@ -746,3 +746,8 @@ div.song.unavailable
 {
     opacity: 0.3;
 }
+
+div.input.select:has(select#playlist-merger-cronjob-frequency)
+{
+    display: none;
+}

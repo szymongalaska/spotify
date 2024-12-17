@@ -15,6 +15,7 @@ use Cake\ORM\Entity;
  * @property string|null $options
  *
  * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\PlaylistMergerCronjob $playlist_merger_cronjob
  */
 class PlaylistMerger extends Entity
 {
@@ -33,5 +34,6 @@ class PlaylistMerger extends Entity
         'target_playlist_id' => true,
         'options' => true,
         'user' => true,
+        'playlist_merger_cronjob' => true
     ];
 }

@@ -38,6 +38,8 @@
         <fieldset>
             <?= $this->Form->control('savedTracks', ['type' => 'checkbox', 'label' => __('Include only songs added to the library (Saved Tracks)')]) ?>
             <?= $this->Form->control('prepend', ['type' => 'checkbox', 'label' => __('Add newest songs on top of playlist')]) ?>
+            <?= $this->Form->control('enable_synchronization', ['type' => 'checkbox', 'label' => __('Enable auto synchronization')]) ?>
+            <?= $this->Form->control('playlist_merger_cronjob.frequency', ['type' => 'select', 'label' => __('Synchronization frequency'), 'options' => ['weekly' => __('Once a week (at Sunday)'), 'once_daily' => __('Once a day'), 'twice_daily' => __('Twice a day'), 'four_times_daily' => __('Every six hours'),]]) ?>
             <div class="hidden">
                 <?= $this->Form->control('entity-id', ['type' => 'hidden', 'value' => $this->getRequest()->getParam('pass')[0]]) ?>
                 <select name="source-playlists[]" multiple="multiple">
@@ -86,6 +88,17 @@
             }
 
             $(this).toggleClass('selected');
+        });
+
+        <?php if($frequency): ?>
+            let frequency = '<?= $frequency ?>';
+            $('input[name="enable_synchronization"]').prop('checked', true);
+            $('select#playlist-merger-cronjob-frequency').val(frequency);
+            $('select#playlist-merger-cronjob-frequency').parent().toggle();
+        <?php endif; ?>
+
+        $('input[name="enable_synchronization"]').on('change', function(){
+            $('select#playlist-merger-cronjob-frequency').parent().toggle();
         });
     });
 </script>
