@@ -47,6 +47,10 @@ class PlaylistMergerTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'INNER',
         ]);
+
+        $this->hasOne('PlaylistMergerCronjobs',[
+        'foreign_key' => 'id'
+        ]);
     }
 
     /**
