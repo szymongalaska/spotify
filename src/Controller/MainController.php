@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 namespace App\Controller;
-use ArrayIterator;
 use Cake\I18n\FrozenTime;
 use Cake\Cache\Cache;
 
@@ -21,8 +20,8 @@ class MainController extends AppController
 
         // Approval
         if ($this->request->getQuery('code')) {
-            $this->getApi()->requestAccessToken($this->getRequest()->getQuery('code'));
-            $this->_setUser($this->getApi()->getAccessToken(), $this->getApi()->getRefreshToken());
+            $this->SpotifyApi->setTokensByCode($this->getRequest()->getQuery('code'));
+            $this->_setUser($this->SpotifyApi->getAccessToken(), $this->SpotifyApi->getRefreshToken());
 
 
             return $this->redirect(['action' => 'dashboard']);
@@ -35,7 +34,7 @@ class MainController extends AppController
         }
 
         // Redirect to login through Spotify - returns Authorization Code
-        return $this->redirect($this->getApi()->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['user-top-read', 'user-read-currently-playing', 'user-read-recently-played', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
+        return $this->redirect($this->SpotifyApi->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['user-top-read', 'user-read-currently-playing', 'user-read-recently-played', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
     }
 
     /**
@@ -48,7 +47,7 @@ class MainController extends AppController
      */
     protected function _setUser(string $accessToken, string $refreshToken)
     {
-        $profile = $this->getApi()->getProfile();
+        $profile = $this->SpotifyApi->getProfile();
 
         if ($user = $this->fetchTable('Users')->findBySpotifyId($profile['id'])->first())
             $user = $this->fetchTable('Users')->updateUserTokens($user, $accessToken, $refreshToken);
@@ -115,7 +114,7 @@ class MainController extends AppController
      */
     public function getUserTopTracks($term = 'medium_term')
     {
-        return $this->getApi()->getTop('tracks', $term, 5);
+        return $this->SpotifyApi->getTop('tracks', $term, 5);
     }
 
     /**
@@ -135,7 +134,7 @@ class MainController extends AppController
      */
     public function getUserTopArtists($term = 'medium_term')
     {
-        return $this->getApi()->getTop('artists', $term, 5);
+        return $this->SpotifyApi->getTop('artists', $term, 5);
     }
 
     /**
@@ -150,7 +149,7 @@ class MainController extends AppController
 
         $after = (int) $date->toUnixString();
 
-        $items = $this->getApi()->getRecentlyPlayedTracks(50, $after);
+        $items = $this->SpotifyApi->getRecentlyPlayedTracks(50, $after);
 
         return array_filter($items, function ($item) use ($date) {
             $playedAt = new FrozenTime($item['played_at']);
@@ -180,7 +179,7 @@ class MainController extends AppController
     {
         $this->viewBuilder()->setLayout('ajax');
 
-        $currentSong = $this->getApi()->getCurrentlyPlaying();
+        $currentSong = $this->SpotifyApi->getCurrentlyPlaying();
         if ($currentSong === null) {
             $this->autoRender = false;
             return null;
@@ -189,5 +188,12 @@ class MainController extends AppController
         $this->set('track', $currentSong['item']);
         $this->set('playing', true);
         $this->render('/element/song');
+    }
+
+    public function test()
+    {
+    
+        $a = $this->SpotifyApi->getAllSavedTracks();
+        dd($a);
     }
 }

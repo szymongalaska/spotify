@@ -18,7 +18,7 @@ class PlaylistController extends MainController
     {
         try{
             $playlist = $this->getPlaylist($playlistId);
-            $playlist['tracks'] = $this->getApi()->getPlaylistTracks($playlistId);
+            $playlist['tracks'] = $this->SpotifyApi->getPlaylistTracks($playlistId);
             $this->set(compact('playlist'));
         }
         catch(BadRequestException $e)
@@ -45,9 +45,9 @@ class PlaylistController extends MainController
      */
     public function viewNotAvailableTracks(string $playlistId)
     {
-        $this->getApi()->setMarket(true);
+        $this->SpotifyApi->setMarket(true);
         $playlist = $this->getPlaylist($playlistId);
-        $tracks =  $this->getApi()->getPlaylistTracks($playlistId);
+        $tracks =  $this->SpotifyApi->getPlaylistTracks($playlistId);
         $playlist['tracks'] = $this->filterAvailableTracks($tracks);
 
         $this->set(compact('playlist'));
@@ -102,7 +102,7 @@ class PlaylistController extends MainController
      */
     protected function getPlaylistSnapshotId(string $playlistId)
     {
-        return $this->getApi()->getPlaylistSnapshotId($playlistId);
+        return $this->SpotifyApi->getPlaylistSnapshotId($playlistId);
     }
 
     /**
@@ -112,7 +112,7 @@ class PlaylistController extends MainController
      */
     protected function getUserPlaylists()
     {
-        return $this->getApi()->getAllPlaylists();
+        return $this->SpotifyApi->getAllPlaylists();
     }
 
     /**
@@ -122,7 +122,7 @@ class PlaylistController extends MainController
      */
     protected function getUserOwnPlaylists()
     {
-        return $this->getApi()->getOwnedPlaylists($this->getRequest()->getSession()->read('user')['spotify_id']);
+        return $this->SpotifyApi->getOwnedPlaylists($this->getRequest()->getSession()->read('user')['spotify_id']);
     }
 
     /**
@@ -135,7 +135,7 @@ class PlaylistController extends MainController
     {
         $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'playlistTracks', $playlistId, $snapshotId]);
         return Cache::remember($cacheKey, function () use ($playlistId) {
-            return $this->getApi()->getPlaylistTracks($playlistId, 'added_at,track(id)');
+            return $this->SpotifyApi->getPlaylistTracks($playlistId, 'added_at,track(id)');
         }, '_spotify_');
     }
 
@@ -146,6 +146,6 @@ class PlaylistController extends MainController
      */
     protected function getPlaylist(string $playlistId)
     {
-        return $this->getApi()->getPlaylist($playlistId);
+        return $this->SpotifyApi->getPlaylist($playlistId);
     }
 }

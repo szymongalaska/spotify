@@ -25,16 +25,14 @@ use Cake\I18n\I18n;
  *
  * Add your application-wide methods in the class below, your controllers
  * will inherit them.
+ * 
+ * @property \App\Controller\Component\SpotifyApiComponent $SpotifyApi
  *
  * @link https://book.cakephp.org/5/en/controllers.html#the-app-controller
  */
 class AppController extends Controller
 {
-     /**
-     * Spotify API Object
-     * @var \App\Utility\SpotifyApi
-     */
-    private $_api;
+
     /**
      * Initialization hook method.
      *
@@ -47,8 +45,9 @@ class AppController extends Controller
     public function initialize(): void
     {
         parent::initialize();
+        $this->loadComponent('SpotifyApi', ['clientId' => env('CLIENT_ID'), 'clientSecret' => env('CLIENT_SECRET'), 'redirectUri' => env('REDIRECT_URI'), 'client' => new \Cake\Http\Client(), 'useMarket' => false]);
 
-        $this->_api = new SpotifyApi(env('CLIENT_ID'), env('CLIENT_SECRET'), env('REDIRECT_URI'), false);
+        // $this->_api = new SpotifyApi(env('CLIENT_ID'), env('CLIENT_SECRET'), env('REDIRECT_URI'), new \Cake\Http\Client(), false);
         $this->loadComponent('Flash');
 
         /*
@@ -105,24 +104,15 @@ class AppController extends Controller
                 return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
 
             // Set tokens
-            if(!$this->getApi()->checkTokens())
-                $this->getApi()->setTokensOfUser($this->getRequest()->getSession()->read('user')->access_token, $this->getRequest()->getSession()->read('user')->refresh_token);
+            if(!$this->SpotifyApi->checkTokens())
+                $this->SpotifyApi->setTokens(['access_token' => $this->getRequest()->getSession()->read('user')->access_token, 'refresh_token' => $this->getRequest()->getSession()->read('user')->refresh_token]);
         
             // Get current or last played song
             $this->set('user', $this->getRequest()->getSession()->read('user'));
-            $this->set('current_song', $this->getApi()->getCurrentlyPlaying());
+            $this->set('current_song', $this->SpotifyApi->getCurrentlyPlaying());
         }
     }
 
-    /**
-     * Get API Object
-     * 
-     * @return SpotifyApi
-     */
-    protected function getApi()
-    {
-        return $this->_api;
-    }
 
     /**
      * Helper function for making cache keys
@@ -142,7 +132,7 @@ class AppController extends Controller
     {
         $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'],'savedTracks']);
         return Cache::remember($cacheKey, function(){
-            return $this->getApi()->getAllSavedTracks();
+            return $this->SpotifyApi->getAllSavedTracks();
         }, '_spotify_');
     }
 }

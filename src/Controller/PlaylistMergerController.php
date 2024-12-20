@@ -7,7 +7,7 @@ use Cake\Cache\Cache;
 use Cake\I18n\FrozenTime;
 
 /**
- * @param \App\Model\Table\PlaylistMergerTable $PlaylistMerger
+ * @property \App\Model\Table\PlaylistMergerTable $PlaylistMerger
  */
 class PlaylistMergerController extends PlaylistController
 {
@@ -268,7 +268,7 @@ class PlaylistMergerController extends PlaylistController
      */
     private function _addTracksToPlaylist(string $playlistId, array $tracksToAdd)
     {
-        return $this->getApi()->addTracksToPlaylist($playlistId, $this->_prepareTracksForRequest($tracksToAdd), true);
+        return $this->SpotifyApi->addTracksToPlaylist($playlistId, $this->_prepareTracksForRequest($tracksToAdd), true);
     }
 
     /**
@@ -279,7 +279,7 @@ class PlaylistMergerController extends PlaylistController
      */
     private function _deleteTracksFromPlaylist(string $playlistId, array $tracksToRemove)
     {
-        return $this->getApi()->deleteTracksFromPlaylist($playlistId, $this->_prepareTracksForRequest($tracksToRemove));
+        return $this->SpotifyApi->deleteTracksFromPlaylist($playlistId, $this->_prepareTracksForRequest($tracksToRemove));
     }
 
     /**
@@ -383,7 +383,7 @@ class PlaylistMergerController extends PlaylistController
             if(!$user->playlist_merger)
                 continue; 
 
-            $this->getApi()->setTokensOfUser($user->access_token, $user->refresh_token);
+            $this->SpotifyApi->setTokens(['access_token' => $user->access_token, 'refresh_token' => $user->refresh_token]);
             $this->getRequest()->getSession()->write('user', $user);
 
             foreach($user->playlist_merger as $entity)
