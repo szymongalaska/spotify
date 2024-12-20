@@ -26,7 +26,7 @@ class PlaylistMergerController extends PlaylistController
             $entity->source_playlists = json_decode($entity->source_playlists, true);
             $entity->options = json_decode($entity->options, true);
             $this->set('userSavedData', $entity);
-            $this->set('myPlaylists', $this->getUserPlaylists());
+            $this->set('myPlaylists', $this->SpotifyApi->getAllPlaylists());
             $this->set('myOwnPlaylists', $this->getUserOwnPlaylists());
             $this->set('frequency', $entity->playlist_merger_cronjob->frequency ?? null);
     }
@@ -38,7 +38,7 @@ class PlaylistMergerController extends PlaylistController
      */
     public function add()
     {
-        $this->set('myPlaylists', $this->getUserPlaylists());
+        $this->set('myPlaylists', $this->SpotifyApi->getAllPlaylists());
         $this->set('myOwnPlaylists', $this->getUserOwnPlaylists());
     }
 
@@ -67,7 +67,7 @@ class PlaylistMergerController extends PlaylistController
         $playlists = array_map( function($playlist){
             return [
                 'id' => $playlist->id,
-                'playlist' => $this->getPlaylist($playlist->target_playlist_id),
+                'playlist' => $this->SpotifyApi->getPlaylist($playlist->target_playlist_id),
                 'playlist_merger_cronjob' => $playlist->playlist_merger_cronjob
             ];
         }, $playlists->toArray());
@@ -169,10 +169,10 @@ class PlaylistMergerController extends PlaylistController
     private function _mergePlaylists(\App\Model\Entity\PlaylistMerger $entity)
     { 
         $options = json_decode($entity->options, true);
-        $playlist = $this->getPlaylist($entity->target_playlist_id);
+        $playlist = $this->SpotifyApi->getPlaylist($entity->target_playlist_id);
 
         $sourceTracks = $this->_getTracksOfSourcePlaylists(json_decode($entity->source_playlists, true));
-        $targetPlaylistTracks = $this->getTracksOfPlaylist($entity->target_playlist_id, $this->getPlaylistSnapshotId($entity->target_playlist_id));
+        $targetPlaylistTracks = $this->getTracksOfPlaylist($entity->target_playlist_id, $this->SpotifyApi->getPlaylistSnapshotId($entity->target_playlist_id));
         
         // Get IDs of both arrays
         $targetPlaylistTracksIds = array_column(array_column($targetPlaylistTracks, 'track'), 'id');
@@ -293,7 +293,7 @@ class PlaylistMergerController extends PlaylistController
 
         foreach($sourcePlaylists as $playlist)
         {
-            $tracks = array_merge($tracks, $this->getTracksOfPlaylist($playlist, $this->getPlaylistSnapshotId($playlist)));
+            $tracks = array_merge($tracks, $this->getTracksOfPlaylist($playlist, $this->SpotifyApi->getPlaylistSnapshotId($playlist)));
         }
 
         // Sort all tracks by add date ascending
@@ -352,7 +352,7 @@ class PlaylistMergerController extends PlaylistController
     private function _prepareSourcePlaylists(array $sourcePlaylists)
     {
         return array_map(function($playlist){
-            return ['playlist_id' => $playlist, 'snapshot_id' => $this->getPlaylistSnapshotId($playlist)];
+            return ['playlist_id' => $playlist, 'snapshot_id' => $this->SpotifyApi->getPlaylistSnapshotId($playlist)];
         }, $sourcePlaylists);
     }
 

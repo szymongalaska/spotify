@@ -189,11 +189,4 @@ class MainController extends AppController
         $this->set('playing', true);
         $this->render('/element/song');
     }
-
-    public function test()
-    {
-    
-        $a = $this->SpotifyApi->getAllSavedTracks();
-        dd($a);
-    }
 }

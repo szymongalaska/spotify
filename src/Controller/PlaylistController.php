@@ -17,7 +17,7 @@ class PlaylistController extends MainController
     public function view(string $playlistId)
     {
         try{
-            $playlist = $this->getPlaylist($playlistId);
+            $playlist = $this->SpotifyApi->getPlaylist($playlistId);
             $playlist['tracks'] = $this->SpotifyApi->getPlaylistTracks($playlistId);
             $this->set(compact('playlist'));
         }
@@ -35,7 +35,7 @@ class PlaylistController extends MainController
      */
     public function viewNotAvailable()
     {
-        $this->set('playlists', $this->getUserPlaylists());
+        $this->set('playlists', $this->SpotifyApi->getAllPlaylists());
     }
 
     /**
@@ -46,7 +46,7 @@ class PlaylistController extends MainController
     public function viewNotAvailableTracks(string $playlistId)
     {
         $this->SpotifyApi->setMarket(true);
-        $playlist = $this->getPlaylist($playlistId);
+        $playlist = $this->SpotifyApi->getPlaylist($playlistId);
         $tracks =  $this->SpotifyApi->getPlaylistTracks($playlistId);
         $playlist['tracks'] = $this->filterAvailableTracks($tracks);
 
@@ -91,28 +91,7 @@ class PlaylistController extends MainController
      */
     public function find()
     {
-        $this->set('playlists', $this->getUserPlaylists());
-    }
-
-
-    /**
-     * Get snapshot ID of a playlist
-     * @param string $playlistId The Spotify ID of playlist
-     * @return string
-     */
-    protected function getPlaylistSnapshotId(string $playlistId)
-    {
-        return $this->SpotifyApi->getPlaylistSnapshotId($playlistId);
-    }
-
-    /**
-     * Get a list of all playlists owned or followed by the current Spotify user.
-     * 
-     * @return array
-     */
-    protected function getUserPlaylists()
-    {
-        return $this->SpotifyApi->getAllPlaylists();
+        $this->set('playlists', $this->SpotifyApi->getAllPlaylists());
     }
 
     /**
@@ -137,15 +116,5 @@ class PlaylistController extends MainController
         return Cache::remember($cacheKey, function () use ($playlistId) {
             return $this->SpotifyApi->getPlaylistTracks($playlistId, 'added_at,track(id)');
         }, '_spotify_');
-    }
-
-    /**
-     * Get a playlist
-     * @param string $playlistId
-     * @return array
-     */
-    protected function getPlaylist(string $playlistId)
-    {
-        return $this->SpotifyApi->getPlaylist($playlistId);
     }
 }
