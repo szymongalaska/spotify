@@ -1,0 +1,77 @@
+[
+    {
+        "external_urls": {
+            "spotify": "https:\/\/open.spotify.com\/artist\/testArtist2"
+        },
+        "followers": {
+            "href": null,
+            "total": 3210481
+        },
+        "genres": [
+            "alternative metal",
+            "nu metal",
+            "post-grunge",
+            "uk metalcore",
+            "welsh metal"
+        ],
+        "href": "https:\/\/api.spotify.com\/v1\/artists\/testArtist2",
+        "id": "testArtist2",
+        "images": [
+            {
+                "height": 640,
+                "url": "https:\/\/i.scdn.co\/image\/testimage",
+                "width": 640
+            },
+            {
+                "height": 320,
+                "url": "https:\/\/i.scdn.co\/image\/testimage",
+                "width": 320
+            },
+            {
+                "height": 160,
+                "url": "https:\/\/i.scdn.co\/image\/testimage",
+                "width": 160
+            }
+        ],
+        "name": "testName2",
+        "popularity": 69,
+        "type": "artist",
+        "uri": "spotify:artist:testArtist2"
+    },
+    {
+        "external_urls": {
+            "spotify": "https:\/\/open.spotify.com\/artist\/testArtist1"
+        },
+        "followers": {
+            "href": null,
+            "total": 25294
+        },
+        "genres": [
+            "experimental rock",
+            "noise rock"
+        ],
+        "href": "https:\/\/api.spotify.com\/v1\/artists\/testArtist1",
+        "id": "testArtist1",
+        "images": [
+            {
+                "height": 640,
+                "url": "https:\/\/i.scdn.co\/image\/testImage",
+                "width": 640
+            },
+            {
+                "height": 320,
+                "url": "https:\/\/i.scdn.co\/image\/testImage",
+                "width": 320
+            },
+            {
+                "height": 160,
+                "url": "https:\/\/i.scdn.co\/image\/testImage",
+                "width": 160
+            }
+        ],
+        "name": "testName1",
+        "popularity": 21,
+        "type": "artist",
+        "uri": "spotify:artist:testArtist1"
+    }
+]
