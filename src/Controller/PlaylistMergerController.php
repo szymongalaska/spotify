@@ -27,7 +27,7 @@ class PlaylistMergerController extends PlaylistController
             $entity->options = json_decode($entity->options, true);
             $this->set('userSavedData', $entity);
             $this->set('myPlaylists', $this->SpotifyApi->getAllPlaylists());
-            $this->set('myOwnPlaylists', $this->getUserOwnPlaylists());
+            $this->set('myOwnPlaylists', $this->SpotifyApi->getOwnedPlaylists());
             $this->set('frequency', $entity->playlist_merger_cronjob->frequency ?? null);
     }
 
@@ -39,7 +39,7 @@ class PlaylistMergerController extends PlaylistController
     public function add()
     {
         $this->set('myPlaylists', $this->SpotifyApi->getAllPlaylists());
-        $this->set('myOwnPlaylists', $this->getUserOwnPlaylists());
+        $this->set('myOwnPlaylists', $this->SpotifyApi->getOwnedPlaylists());
     }
 
     /**
@@ -164,66 +164,68 @@ class PlaylistMergerController extends PlaylistController
     /**
      * Merge playlists
      * @param \App\Model\Entity\PlaylistMerger $entity Entity data with source and target playlists
-     * @return void
+     * @return bool
      */
     private function _mergePlaylists(\App\Model\Entity\PlaylistMerger $entity)
-    { 
+    {
         $options = json_decode($entity->options, true);
         $playlist = $this->SpotifyApi->getPlaylist($entity->target_playlist_id);
 
         $sourceTracks = $this->_getTracksOfSourcePlaylists(json_decode($entity->source_playlists, true));
         $targetPlaylistTracks = $this->getTracksOfPlaylist($entity->target_playlist_id, $this->SpotifyApi->getPlaylistSnapshotId($entity->target_playlist_id));
-        
+
         // Get IDs of both arrays
         $targetPlaylistTracksIds = array_column(array_column($targetPlaylistTracks, 'track'), 'id');
         $sourceTracksIds = array_column(array_column($sourceTracks, 'track'), 'id');
 
         // Filter both arrays so they only contain IDs to add/delete
-        $tracksToAdd = array_filter($sourceTracks, function($track) use ($targetPlaylistTracksIds){
+        $tracksToAdd = array_filter($sourceTracks, function ($track) use ($targetPlaylistTracksIds) {
             return !in_array($track['track']['id'], $targetPlaylistTracksIds);
         });
 
-        $tracksToRemove = array_filter($targetPlaylistTracks, function($track) use($sourceTracksIds){
-            if($track['track']['id'] !== null)
+        $tracksToRemove = array_filter($targetPlaylistTracks, function ($track) use ($sourceTracksIds) {
+            if ($track['track']['id'] !== null)
                 return !in_array($track['track']['id'], $sourceTracksIds);
         });
-        
-        // Remove/add tracks that are not in Saved Tracks
-        if($options['savedTracks'] == true){
-            $savedTracks = $this->getUserSavedTracks(); 
-            $savedTracksIds = array_column(array_column($savedTracks, 'track'),'id');
 
-            $tracksToAdd = array_filter($tracksToAdd, function($track) use ($savedTracksIds){
-                    return in_array($track['track']['id'], $savedTracksIds);
+        // Remove/add tracks that are not in Saved Tracks
+        if ($options['savedTracks'] == true) {
+            $savedTracks = $this->getUserSavedTracks();
+            $savedTracksIds = array_column(array_column($savedTracks, 'track'), 'id');
+
+            $tracksToAdd = array_filter($tracksToAdd, function ($track) use ($savedTracksIds) {
+                return in_array($track['track']['id'], $savedTracksIds);
             });
 
-            $tracksToRemove = array_merge($tracksToRemove, array_filter($targetPlaylistTracks, function($track) use ($savedTracksIds){
-                if($track['track']['id'] !== null)
+            $tracksToRemove = array_merge($tracksToRemove, array_filter($targetPlaylistTracks, function ($track) use ($savedTracksIds) {
+                if ($track['track']['id'] !== null)
                     return !in_array($track['track']['id'], $savedTracksIds);
             }));
-        }   
-        
-        if(!empty($tracksToAdd))
-        {
-            if($options['prepend'] == true)
+        }
+
+        if (!empty($tracksToAdd)) {
+            if ($options['prepend'] == true)
                 $tracksToAdd = $this->_sortTracks($tracksToAdd);
 
             $resultAdd = $this->_addTracksToPlaylist($entity->target_playlist_id, $tracksToAdd);
-        }
-        else
+        } else
             $resultAdd = true;
 
-        if(!empty($tracksToRemove))
+        if (!empty($tracksToRemove))
             $resultRemove = $this->_deleteTracksFromPlaylist($entity->target_playlist_id, $tracksToRemove);
         else
             $resultRemove = true;
 
-        if(empty($tracksToAdd) && empty($tracksToRemove))
+        if (empty($tracksToAdd) && empty($tracksToRemove)) {
             $this->Flash->info(__('Playlist {0} is already merged', $playlist['name']));
-        else if(!$resultAdd || !$resultRemove)
+            return true;
+        } else if (!$resultAdd || !$resultRemove) {
             $this->Flash->error(__('There was a problem while merging playlist {0}', $playlist['name']));
-        else
+            return false;
+        } else {
             $this->Flash->success(__('{0} merged successfuly', $playlist['name']));
+            return true;
+        }
     }
 
     /**
@@ -371,13 +373,14 @@ class PlaylistMergerController extends PlaylistController
         $this->autoRender = false;
 
         if($this->getRequest()->getQuery('token') !== 'qM7MO43sqOfYRFcDKlBwXuMRxFcTv0RTeURD1iFm0p5Lb7k3f0Fbx2jB8hAMGTX0')
-            return $this->response->withStatus(401);
+            return $this->getResponse()->withStatus(401);
 
         if(!in_array($frequency, ['weekly', 'once_daily', 'twice_daily', 'four_times_daily']))
-            return $this->response->withStatus(400);
+            return $this->getResponse()->withStatus(400);
 
         $users = $this->fetchTable('Users')->find('all')->contain(['PlaylistMerger' => ['PlaylistMergerCronjobs']])->matching('PlaylistMerger.PlaylistMergerCronjobs', function ($query) use($frequency){return $query->where(['frequency' => $frequency]);});
 
+        /** @var \App\Model\Entity\User $user */
         foreach($users as $user)
         {
             if(!$user->playlist_merger)
@@ -386,9 +389,16 @@ class PlaylistMergerController extends PlaylistController
             $this->SpotifyApi->setTokens(['access_token' => $user->access_token, 'refresh_token' => $user->refresh_token]);
             $this->getRequest()->getSession()->write('user', $user);
 
+            $this->log('Synchronizing playlists for user: '.$user->id, 'info', ['scope' => 'spotify_playlists']);
+
+            /** @var \App\Model\Entity\PlaylistMerger $entity */
             foreach($user->playlist_merger as $entity)
             {
-                $this->_mergePlaylists($entity);
+                $result = $this->_mergePlaylists($entity);
+                if($result)
+                    $this->log('Successfuly merged entity: '.$entity->id, 'info', ['scope' => 'spotify_playlists']);
+                else
+                    $this->log('There was a problem during synchronization of entity: '.$entity->id, 'warning', ['scope' => 'spotify_playlists']);
             }
         }
 

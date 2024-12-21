@@ -46,8 +46,6 @@ class AppController extends Controller
     {
         parent::initialize();
         $this->loadComponent('SpotifyApi', ['clientId' => env('CLIENT_ID'), 'clientSecret' => env('CLIENT_SECRET'), 'redirectUri' => env('REDIRECT_URI'), 'client' => new \Cake\Http\Client(), 'useMarket' => false]);
-
-        // $this->_api = new SpotifyApi(env('CLIENT_ID'), env('CLIENT_SECRET'), env('REDIRECT_URI'), new \Cake\Http\Client(), false);
         $this->loadComponent('Flash');
 
         /*
@@ -64,14 +62,12 @@ class AppController extends Controller
     private function _getLanguage()
     {
         $supportedLanguages = ['pl', 'en'];
-        if(!$this->getRequest()->getSession()->check('lang'))
-        {
+        if (!$this->getRequest()->getSession()->check('lang')) {
             $languages = $this->getRequest()->getHeaderLine('Accept-Language');
             $language = substr(explode(',', $languages)[0], 0, 2);
 
             $language = (in_array($language, $supportedLanguages)) ? $language : 'en';
-        }
-        else
+        } else
             $language = $this->getRequest()->getSession()->read('lang');
 
         return $language;
@@ -96,17 +92,16 @@ class AppController extends Controller
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         $this->_setLanguage();
-        
-        if(!in_array($this->getRequest()->getParam('action'), ['login', 'logout', 'cron']) && !in_array($this->getRequest()->getParam('controller'), ['Pages']))
-        {
+
+        if (!in_array($this->getRequest()->getParam('action'), ['login', 'logout', 'cron']) && !in_array($this->getRequest()->getParam('controller'), ['Pages'])) {
             // Redirect to login screen if not logged in
-            if(!$this->getRequest()->getSession()->check('user'))
+            if (!$this->getRequest()->getSession()->check('user'))
                 return $this->redirect(['controller' => 'Pages', 'action' => 'display', 'home']);
 
             // Set tokens
-            if(!$this->SpotifyApi->checkTokens())
+            if (!$this->SpotifyApi->checkTokens())
                 $this->SpotifyApi->setTokens(['access_token' => $this->getRequest()->getSession()->read('user')->access_token, 'refresh_token' => $this->getRequest()->getSession()->read('user')->refresh_token]);
-        
+
             // Get current or last played song
             $this->set('user', $this->getRequest()->getSession()->read('user'));
             $this->set('current_song', $this->SpotifyApi->getCurrentlyPlaying());
@@ -130,8 +125,8 @@ class AppController extends Controller
      */
     protected function getUserSavedTracks()
     {
-        $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'],'savedTracks']);
-        return Cache::remember($cacheKey, function(){
+        $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'savedTracks']);
+        return Cache::remember($cacheKey, function () {
             return $this->SpotifyApi->getAllSavedTracks();
         }, '_spotify_');
     }

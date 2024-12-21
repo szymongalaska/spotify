@@ -16,6 +16,8 @@ use Cake\ORM\Entity;
  * @property string|null $refresh_token
  * @property \Cake\I18n\DateTime $created
  * @property \Cake\I18n\DateTime $modified
+ * 
+ * @property \App\Model\Entity\PlaylistMerger[] $playlist_merger
  */
 class User extends Entity
 {

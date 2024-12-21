@@ -151,14 +151,14 @@ class SpotifyApiComponent extends Component
         $parameters =
             [
                 'response_type' => 'code',
-                'client_id' => $this->getClientId(),
-                'redirect_uri' => $this->getRedirectUri(),
+                'client_id' => $this->_clientId,
+                'redirect_uri' => $this->_redirectUri,
                 'scope' => isset($options['scope']) ? implode(' ', $options['scope']) : null,
                 'state' => $options['state'] ?? null,
                 'show_dialog' => !empty($options['show_dialog']) ? 'true' : null,
             ];
 
-        return $this->getClient()->buildUrl(self::ACCOUNT_URL . '/authorize', $parameters);
+        return $this->_httpClient->buildUrl(self::ACCOUNT_URL . '/authorize', $parameters);
     }
 
     /**
@@ -174,7 +174,7 @@ class SpotifyApiComponent extends Component
             [
                 'grant_type' => 'authorization_code',
                 'code' => $code,
-                'redirect_uri' => $this->getRedirectUri(),
+                'redirect_uri' => $this->_redirectUri,
             ];
 
         return $this->_getTokens($data);
@@ -221,7 +221,7 @@ class SpotifyApiComponent extends Component
     protected function _getTokens(array $data): array|null
     {
         $headers = [
-            'Authorization' => 'Basic ' . base64_encode($this->getClientId() . ':' . $this->getClientSecret()),
+            'Authorization' => 'Basic ' . base64_encode($this->_clientId . ':' . $this->_clientSecret),
             'Content-Type' => 'application/x-www-form-urlencoded',
         ];
 
@@ -334,24 +334,23 @@ class SpotifyApiComponent extends Component
     {
         $playlists = $this->_batchRetrieveData(self::API_URL . '/v1/me/playlists?limit=50');
 
-        return array_filter($playlists);
+        return array_values(array_filter($playlists));
     }
 
     /**
      * Get a list of all playlists owned by the current Spotify user.
      *
-     * @param string $ownerId Need to compare with playlist owner ID
-     *
      * @return array
      */
-    public function getOwnedPlaylists(string $ownerId)
+    public function getOwnedPlaylists()
     {
         $playlists = $this->getAllPlaylists();
+        $ownerId = $this->getProfile()['id'];
 
-        return array_filter($playlists, function ($playlist) use ($ownerId) {
+        return array_values(array_filter($playlists, function ($playlist) use ($ownerId) {
             if ($playlist['owner']['id'] == $ownerId)
                 return $playlist;
-        });
+        }));
     }
 
     /**
@@ -371,7 +370,7 @@ class SpotifyApiComponent extends Component
             $response = $this->request($method, $url);
 
             if ($path !== '')
-                $response = $this->_getValueByPath($response, $path);
+                $response = $this->getValueByPath($response, $path);
 
             $url = $response['next'];
             $items = array_merge($items, $response['items']);
@@ -389,7 +388,7 @@ class SpotifyApiComponent extends Component
      *
      * @return mixed
      */
-    private function _getValueByPath(array $array, string $path)
+    protected function getValueByPath(array $array, string $path)
     {
         $keys = explode('.', $path);
         foreach ($keys as $key) {
@@ -429,13 +428,12 @@ class SpotifyApiComponent extends Component
                 if (!$this->shouldRetry())
                     throw $e;
             }
-            ;
         }
         while ($this->shouldRetry());
 
         $this->_clearOptions();
 
-        if ($result->getStatusCode() === 200)
+        if ($result->isOk())
             return $result->getJson();
         else
             return null;
@@ -457,7 +455,7 @@ class SpotifyApiComponent extends Component
      *
      * @return bool
      */
-    public function shouldRetry()
+    protected function shouldRetry()
     {
         if ($this->_retry) {
             $this->_retry = false;
@@ -466,6 +464,11 @@ class SpotifyApiComponent extends Component
         return false;
     }
 
+    /**
+     * Add market param to Data array or string
+     * @param array|string $data
+     * @return array|string
+     */
     private function _addMarket(array|string $data)
     {
         if ($this->_useMarket == false)
@@ -488,7 +491,7 @@ class SpotifyApiComponent extends Component
      *
      * @return \Cake\Http\Client\Response
      */
-    private function _send(string $method, string $url, array|string $data = [])
+    protected function _send(string $method, string $url, array|string $data = [])
     {
         $this->_setOptions();
 
@@ -496,9 +499,9 @@ class SpotifyApiComponent extends Component
             $data = $this->_addMarket($data);
 
         $response = match (strtoupper($method)) {
-            'GET' => $this->getClient()->get($url, $data, $this->_options),
-            'POST' => $this->getClient()->post($url, $data, $this->_options),
-            'DELETE' => $this->getClient()->delete($url, $data, $this->_options),
+            'GET' => $this->_httpClient->get($url, $data, $this->_options),
+            'POST' => $this->_httpClient->post($url, $data, $this->_options),
+            'DELETE' => $this->_httpClient->delete($url, $data, $this->_options),
         };
 
         if ($response->getStatusCode() >= 400)
@@ -565,7 +568,7 @@ class SpotifyApiComponent extends Component
         switch ($response->getStatusCode()) {
             case 401:
                 if ($this->refreshTokens())
-                    $this->retry();
+                    $this->_retry();
                 else
                     $exception = new UnauthorizedException(__('Access revoked. Please login.'));
                 break;
@@ -578,7 +581,7 @@ class SpotifyApiComponent extends Component
                 }
 
                 sleep($sleep);
-                $this->retry();
+                $this->_retry();
                 break;
             case 503:
                 $exception = new ServiceUnavailableException(__('Spotify API is currently unavailable. Try again later.'));
@@ -617,7 +620,7 @@ class SpotifyApiComponent extends Component
      *
      * @return void
      */
-    public function retry()
+    private function _retry()
     {
         $this->_retry = true;
         $this->_retryCount++;
@@ -661,46 +664,6 @@ class SpotifyApiComponent extends Component
     }
 
     /**
-     * Get Client ID
-     *
-     * @return string
-     */
-    public function getClientId()
-    {
-        return $this->_clientId;
-    }
-
-    /**
-     * Get Redirect URI
-     *
-     * @return string
-     */
-    public function getRedirectUri()
-    {
-        return $this->_redirectUri;
-    }
-
-    /**
-     * Get HTTP Client
-     *
-     * @return ClientInterface
-     */
-    public function getClient()
-    {
-        return $this->_httpClient;
-    }
-
-    /**
-     * Get Client Secret
-     *
-     * @return string
-     */
-    public function getClientSecret()
-    {
-        return $this->_clientSecret;
-    }
-
-    /**
      * Get a playlist owned by a Spotify user.
      *
      * @param string $playlistId The Spotify ID of the playlist.
@@ -739,7 +702,7 @@ class SpotifyApiComponent extends Component
     {
         $options = $fields !== '' ? ['fields' => 'next, items(' . $fields . ')'] : [];
 
-        $url = $this->getClient()->buildUrl(self::API_URL . '/v1/playlists/' . $playlistId . '/tracks', $options);
+        $url = $this->_httpClient->buildUrl(self::API_URL . '/v1/playlists/' . $playlistId . '/tracks', $options);
 
         return $this->_batchRetrieveData($url, 'GET');
     }
@@ -759,7 +722,7 @@ class SpotifyApiComponent extends Component
      *@throws InvalidArgumentException|\Exception
      *
      */
-    private function _modifyPlaylistTracks(string $method, string $playlistId, array $tracks, array $options = [])
+    protected function _modifyPlaylistTracks(string $method, string $playlistId, array $tracks, array $options = [])
     {
         if (empty($tracks))
             throw new InvalidArgumentException('Tracks array cannot be empty.');
@@ -847,7 +810,8 @@ class SpotifyApiComponent extends Component
      */
     public function getMultipleTracks(array $tracks)
     {
-        $tracks = array_chunk($tracks, 50);
+        
+        $tracks = array_chunk(array_unique($tracks), 50);
         $result = [];
 
         foreach ($tracks as $chunk) {
@@ -864,7 +828,7 @@ class SpotifyApiComponent extends Component
      */
     public function getLeastPopularArtist()
     {
-        $url = $this->getTop('artists', 'long_term', 50)['href'];
+        $url = $this->_httpClient->buildUrl(self::API_URL.'/v1/me/top/artists', ['time_range' => 'long_term', 'limit' => 50, 'offset' => 0]);
         $items = $this->_batchRetrieveData($url);
 
         usort($items, function ($a, $b) {
@@ -896,7 +860,7 @@ class SpotifyApiComponent extends Component
             'before' => $before
         ];
 
-        $url = $this->getClient()->buildUrl(self::API_URL . '/v1/me/player/recently-played', $data);
+        $url = $this->_httpClient->buildUrl(self::API_URL . '/v1/me/player/recently-played', $data);
 
         return $this->_batchRetrieveData($url);
     }

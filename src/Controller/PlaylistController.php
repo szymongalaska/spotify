@@ -93,17 +93,7 @@ class PlaylistController extends MainController
     {
         $this->set('playlists', $this->SpotifyApi->getAllPlaylists());
     }
-
-    /**
-     * Get a list of all playlists owned by the current Spotify user.
-     * 
-     * @return array
-     */
-    protected function getUserOwnPlaylists()
-    {
-        return $this->SpotifyApi->getOwnedPlaylists($this->getRequest()->getSession()->read('user')['spotify_id']);
-    }
-
+    
     /**
      * Get a list of tracks from a specified playlist, retrieve from cache if availabe otherwise save it for next time
      * @param string $playlistId ID of Spotify playlist

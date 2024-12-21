@@ -100,7 +100,7 @@ return [
             'path' => CACHE,
             'url' => env('CACHE_DEFAULT_URL', null),
         ],
-        
+
         '_spotify_' => [
             'className' => FileEngine::class,
             'path' => CACHE,
@@ -370,6 +370,25 @@ return [
             'url' => env('LOG_QUERIES_URL', null),
             'scopes' => ['cake.database.queries'],
         ],
+
+        'spotify' => [
+            'className' => FileLog::class,
+            'path' => LOGS,
+            'file' => 'spotify',
+            'url' => null,
+            'scopes' => ['spotify', 'spotify_playlists'],
+            'levels' => ['warning', 'error', 'critical', 'alert', 'emergency', 'info']
+        ],
+
+        'spotify_playlists' => [
+            'className' => FileLog::class,
+            'path' => LOGS,
+            'file' => 'spotify_playlists',
+            'url' => null,
+            'scopes' => ['spotify_playlists'],
+            'levels' => ['warning', 'info']
+        ],
+
     ],
 
     /*

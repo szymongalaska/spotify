@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 use Cake\I18n\FrozenTime;
-use Cake\Cache\Cache;
 
 class MainController extends AppController
 {
@@ -34,7 +33,7 @@ class MainController extends AppController
         }
 
         // Redirect to login through Spotify - returns Authorization Code
-        return $this->redirect($this->SpotifyApi->getAuthorizeUrl(['show_dialog' => true, 'scope' => ['user-top-read', 'user-read-currently-playing', 'user-read-recently-played', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
+        return $this->redirect($this->SpotifyApi->getAuthorizeUrl(['show_dialog' => env('SHOW_DIALOG', null), 'scope' => ['user-top-read', 'user-read-currently-playing', 'user-read-recently-played', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
     }
 
     /**
