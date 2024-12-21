@@ -869,13 +869,13 @@ class SpotifyApiComponent extends Component
      * Create a playlist for a Spotify user. (The playlist will be empty until you add tracks.) Each user is generally limited to a maximum of 11000 playlists.
      * 
      * @param string $playlistName The name for the new playlist, for example "Your Coolest Playlist". This name does not need to be unique; a user may have several playlists with the same name.
-     * @param string $playlistDescription value for playlist description as displayed in Spotify Clients and in the Web API.
-     * @param bool $public Defaults to true. The playlist's public/private status (if it should be added to the user's profile or not): true the playlist will be public, false the playlist will be private. To be able to create private playlists, the user must have granted the playlist-modify-private scope. For more about public/private status, see Working with Playlists
-     * @param bool $collaborative Defaults to false. If true the playlist will be collaborative. Note: to create a collaborative playlist you must also set public to false. To create collaborative playlists you must have granted playlist-modify-private and playlist-modify-public scopes.
+     * @param null|string $playlistDescription value for playlist description as displayed in Spotify Clients and in the Web API.
+     * @param null|bool $public Defaults to true. The playlist's public/private status (if it should be added to the user's profile or not): true the playlist will be public, false the playlist will be private. To be able to create private playlists, the user must have granted the playlist-modify-private scope. For more about public/private status, see Working with Playlists
+     * @param null|bool $collaborative Defaults to false. If true the playlist will be collaborative. Note: to create a collaborative playlist you must also set public to false. To create collaborative playlists you must have granted playlist-modify-private and playlist-modify-public scopes.
      * 
      * @return array|null
      */
-    public function createPlaylist(string $playlistName, string $playlistDescription, bool $public = true, bool $collaborative = false)
+    public function createPlaylist(string $playlistName, ?string $playlistDescription = null, ?bool $public = true, ?bool $collaborative = false)
     {
         $userId = $this->getProfile()['id'];
 
@@ -886,6 +886,6 @@ class SpotifyApiComponent extends Component
             'collaborative' => $collaborative
         ];
 
-        return $this->request('POST', self::API_URL.'/v1/users/'.$userId.'/playlists', json_encode($data));
+        return $this->request('POST', self::API_URL.'/v1/users/'.$userId.'/playlists', json_encode(array_filter($data)));
     }
 }

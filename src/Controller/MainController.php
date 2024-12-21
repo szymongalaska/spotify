@@ -188,4 +188,10 @@ class MainController extends AppController
         $this->set('playing', true);
         $this->render('/element/song');
     }
+
+    public function test()
+    {
+        $r = $this->SpotifyApi->createPlaylist('elo', );
+        dd($r);
+    }
 }

@@ -153,3 +153,30 @@ msgstr "Za mało playlist by scalić"
 
 msgid "Nothing to synchronize"
 msgstr "Nie ma nic do synchronizacji"
+
+msgid "Name"
+msgstr "Nazwa"
+
+msgid "Description"
+msgstr "Opis"
+
+msgid "Name of playlist"
+msgstr "Nazwa playlisty"
+
+msgid "Description of playlist"
+msgstr "Opis playlisty"
+
+msgid "Public playlist"
+msgstr "Playlista publiczna"
+
+msgid "Create new playlist"
+msgstr "Utwórz nową playlistę"
+
+msgid "Select source and target playlists"
+msgstr "Wybierz playlisty źródłowe i docelowe"
+
+msgid "Playlist {0} created"
+msgstr "Utworzono playlistę {0}"
+
+msgid "Error while creating playlist"
+msgstr "Błąd podczas tworzenia playlisty"

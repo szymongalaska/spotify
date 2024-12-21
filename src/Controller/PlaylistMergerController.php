@@ -121,6 +121,22 @@ class PlaylistMergerController extends PlaylistController
      */
     public function saveAndMerge()
     {
+        if($this->getRequest()->getData('target-playlist') === null || $this->getRequest()->getData('source-playlists') === null)
+        {
+            $this->Flash->error(__('Select source and target playlists'));
+            return $this->redirect(['action' => 'add']);    
+        }
+
+        if($this->getRequest()->getData('target-playlist') == 'create-new')
+        {
+            $newPlaylist = $this->getRequest()->getData('newPlaylist');
+            $targetPlaylist = $this->createPlaylist($newPlaylist['name'], $newPlaylist['description'], (bool) $newPlaylist['public']);
+
+            if($targetPlaylist === null)
+                return $this->redirect(['action' => 'add']);
+        }
+        else
+            $targetPlaylist = $this->getRequest()->getData('target-playlist');
 
         $options = [
             'prepend' => $this->getRequest()->getData('prepend'),
@@ -129,7 +145,7 @@ class PlaylistMergerController extends PlaylistController
 
         $frequency = $this->getRequest()->getData('enable_synchronization') == true ? $this->getRequest()->getData('playlist_merger_cronjob')['frequency'] : null;
 
-        $entity = $this->_saveEntity($this->getRequest()->getData('source-playlists'), $this->getRequest()->getData('target-playlist'), $options, (int) $this->getRequest()->getData('entity-id'), $frequency);
+        $entity = $this->_saveEntity($this->getRequest()->getData('source-playlists'), $targetPlaylist, $options, (int) $this->getRequest()->getData('entity-id'), $frequency);
         
         if(!$entity)
         {
@@ -406,5 +422,4 @@ class PlaylistMergerController extends PlaylistController
 
         return $this->response->withStatus(200);
     }
-
 }

@@ -107,4 +107,26 @@ class PlaylistController extends MainController
             return $this->SpotifyApi->getPlaylistTracks($playlistId, 'added_at,track(id)');
         }, '_spotify_');
     }
+
+    /**
+     * Create a playlist using SpotifyApi and return its ID
+     * 
+     * @param string $playlistName
+     * @param null|string $playlistDescription
+     * @param null|bool $public
+     * @param null|bool $collaborative
+     * 
+     * @return string
+     */
+    protected function createPlaylist(string $playlistName, ?string $playlistDescription = null, ?bool $public = true, ?bool $collaborative = false)
+    {
+        $result = $this->SpotifyApi->createPlaylist($playlistName, $playlistDescription, $public, $collaborative)['id'];
+
+        if($result)
+            $this->Flash->success(__('Playlist {0} created', $playlistName));
+        else
+            $this->Flash->error(__('Error while creating playlist'));
+
+        return $result;
+    }
 }
