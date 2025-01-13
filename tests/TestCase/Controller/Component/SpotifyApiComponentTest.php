@@ -816,18 +816,18 @@ class SpotifyApiComponentTest extends TestCase
 
         $this->SpotifyApi->expects($this->once())->method('getProfile')->willReturn(['id' => 'testUser']);
 
-        $inputData = ['name' => 'testName', 'description' => 'testDescription', 'public' => false, 'collaborative' => false];
+        $inputData = ['name' => 'testName', 'description' => 'testDescription', 'public' => true, 'collaborative' => true];
         $createPlaylistFixture = $this->getJsonFixture('create-playlist');
         $this->SpotifyApi->expects($this->once())->method('request')->with('POST', 'https://api.spotify.com/v1/users/testUser/playlists', json_encode($inputData))->willReturn($createPlaylistFixture);
 
-        $result = $this->SpotifyApi->createPlaylist('testName', 'testDescription', false, false);
+        $result = $this->SpotifyApi->createPlaylist('testName', 'testDescription', true, true);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertEquals('testDescription', $result['description'], );
         $this->assertEquals('testName', $result['name']);
-        $this->assertFalse($result['public']);
-        $this->assertFalse($result['collaborative']);
+        $this->assertTrue($result['public']);
+        $this->assertTrue($result['collaborative']);
         $this->assertEquals('testUser', $result['owner']['id']);
     }
 }

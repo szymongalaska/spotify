@@ -1,5 +1,5 @@
 {
-    "collaborative": false,
+    "collaborative": true,
     "description": "testDescription",
     "external_urls": {
       "spotify": "string"
@@ -32,7 +32,7 @@
       "uri": "string",
       "display_name": "string"
     },
-    "public": false,
+    "public": true,
     "snapshot_id": "string",
     "tracks": {
       "href": "https://api.spotify.com/v1/me/shows?offset=0&limit=20",
