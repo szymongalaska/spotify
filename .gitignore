@@ -53,3 +53,4 @@ nbproject/*
 yarn-debug.log
 yarn-error.log
 composer.lock
+config/Migrations/schema-dump-default.lock
