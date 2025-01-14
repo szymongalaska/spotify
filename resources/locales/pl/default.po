@@ -180,3 +180,9 @@ msgstr "Utworzono playlistę {0}"
 
 msgid "Error while creating playlist"
 msgstr "Błąd podczas tworzenia playlisty"
+
+msgid "Login as test user"
+msgstr "Zaloguj się jako użytkownik testowy"
+
+msgid "Spotify Manager - check your statistics and manage account"
+msgstr "Spotify Manager - sprawdź swoje statystyki i zarządzaj kontem"

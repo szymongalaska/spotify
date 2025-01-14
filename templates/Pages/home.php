@@ -37,7 +37,7 @@ $this->disableAutoLayout();
             <div class="content">
                 <div class="row">
                     <div class="column">
-                        <p>Aplikacja pozwoli ci na sprawdzenie swoich statystyk oraz zarządzanie profilem Spotify.</p>
+                        <p><?= __('Spotify Manager - check your statistics and manage account')?></p>
                     </div>
                 </div>
             </div>
@@ -51,8 +51,9 @@ $this->disableAutoLayout();
                     </div>
                 </div>
                 <div class="row">
-                    <div class="column" style="display: flex; justify-content: center; align-items: center;">
+                    <div class="column" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
                         <?= $this->Html->link(__('Login'), ['controller' => 'main', 'action' => 'login'], ['class' => 'button']) ?>
+                        <?= $this->Html->link(__('Login as test user'), ['controller' => 'main', 'action' => 'loginAsGuest'], ['class' => 'button', 'style' => 'font-size: 0.8rem']) ?>
                     </div>
                 </div>
             </div>

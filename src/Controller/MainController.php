@@ -36,6 +36,13 @@ class MainController extends AppController
         return $this->redirect($this->SpotifyApi->getAuthorizeUrl(['show_dialog' => env('SHOW_DIALOG', null), 'scope' => ['user-top-read', 'user-read-currently-playing', 'user-read-recently-played', 'playlist-read-private', 'playlist-modify-private', 'playlist-read-collaborative', 'playlist-modify-public', 'user-library-read']]));
     }
 
+    public function loginAsGuest()
+    {
+        $user = $this->fetchTable('Users')->findByDisplayName('TEST ACCOUNT')->first();
+        $this->getRequest()->getSession()->write('user', $user);
+        return $this->redirect(['action' => 'dashboard']);
+    }
+
     /**
      * Sets user data to session
      * 
