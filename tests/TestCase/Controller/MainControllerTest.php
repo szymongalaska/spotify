@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
+use App\Controller\Component\SpotifyApiComponent;
 use App\Controller\MainController;
+use Cake\Http\ServerRequest;
+use Cake\Http\TestSuite\HttpClientTrait;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
@@ -15,15 +18,35 @@ use Cake\TestSuite\TestCase;
 class MainControllerTest extends TestCase
 {
     use IntegrationTestTrait;
+    use HttpClientTrait;
 
+    protected $user;
     /**
      * Fixtures
      *
      * @var list<string>
      */
     protected array $fixtures = [
-        'app.Main',
+        'app.Users',
     ];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $usersTable = \Cake\ORM\TableRegistry::getTableLocator()->get('Users');
+        $this->user = $usersTable->find('all')->first();
+    }
+
+    protected function mockCurrentyPlayingGet()
+    {
+        $this->mockClientGet('https://api.spotify.com/v1/me/player/currently-playing', $this->newClientResponse(200, []));
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->user);
+        parent::tearDown();
+    }
 
     /**
      * Test login method
@@ -31,31 +54,64 @@ class MainControllerTest extends TestCase
      * @return void
      * @uses \App\Controller\MainController::login()
      */
-    public function testLogin(): void
+    public function testLoginRedirectUserAlreadyLogged(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->session(['user' => $this->user]);
+        $this->get('/login');
+        $this->assertRedirect('/dashboard');
     }
 
-    /**
-     * Test dashboard method
-     *
-     * @return void
-     * @uses \App\Controller\MainController::dashboard()
-     */
-    public function testDashboard(): void
+    public function testLoginRedirectSuccesfulLogin()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->configRequest(['query' => ['code' => '1']]);
+
+        $this->mockClientPost('https://accounts.spotify.com/api/token', $this->newClientResponse(200, [], json_encode(['access_token' => 'test', 'refresh_token' => 'test'])));
+        $this->mockClientGet('https://api.spotify.com/v1/me', $this->newClientResponse(200, [], json_encode(['id' => '1'])));
+ 
+        $this->get('/login');
+        $this->assertRedirect('/dashboard');
     }
 
-    /**
-     * Test ajaxGetTopTracks method
-     *
-     * @return void
-     * @uses \App\Controller\MainController::ajaxGetTopTracks()
-     */
-    public function testAjaxGetTopTracks(): void
+    public function testLoginRedirectWithError()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->configRequest(['query' => ['error' => 'testError']]);
+
+        $this->get('/login');
+        $this->assertFlashMessage('testError');
+        $this->assertRedirect(['controller' => 'Pages', 'action' => 'display', 'home']);
+    }
+
+    public function testLoginRedirectToSpotifyApi()
+    {
+        $this->get('/login');
+        $this->assertRedirectContains('https://accounts.spotify.com/authorize');
+    }   
+
+    public function testDashboard()
+    {
+        $this->session(['user' => $this->user]);
+
+        $this->mockCurrentyPlayingGet();
+        $this->mockClientGet('https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=5&offset=0', $this->newClientResponse(200, [],file_get_contents(TESTS . 'Fixture' . DS . 'SpotifyApi' . DS . 'top-artists-and-tracks' . '.json')));
+        $this->mockClientGet('https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=5&offset=0', $this->newClientResponse(200, [], json_encode(['data'])));
+
+        $this->get('/dashboard');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('John Maus');
+    }
+
+    public function testAjaxGetTopTracks()
+    {
+        $this->session(['user' => $this->user]);
+
+        $this->mockCurrentyPlayingGet();
+        $this->mockClientGet('https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=5&offset=0', $this->newClientResponse(200, [], json_encode(['items' => []])));
+
+        $this->get('/main/ajax-get-top-tracks/long_term');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('<div id="tracks">');
     }
 
     /**
@@ -66,7 +122,16 @@ class MainControllerTest extends TestCase
      */
     public function testGetUserTopTracks(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $spotifyApiMock = $this->createPartialMock(SpotifyApiComponent::class, ['getTop']);
+        $spotifyApiMock->expects($this->once())->method('getTop')->with('tracks', 'medium_term', 5)->willReturn([]);
+
+        $controller = new MainController(new ServerRequest());
+
+        $controller->SpotifyApi = $spotifyApiMock;
+
+        $result = $controller->getUserTopTracks();
+
+        $this->assertIsArray($result);
     }
 
     /**
@@ -77,7 +142,12 @@ class MainControllerTest extends TestCase
      */
     public function testLogout(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->session(['user' => $this->user]);
+
+        $this->get('/main/logout');
+
+        $this->assertRedirect(['controller' => 'Pages', 'action' => 'display', 'home']);
+        $this->assertSessionNotHasKey('user');
     }
 
     /**
@@ -88,7 +158,16 @@ class MainControllerTest extends TestCase
      */
     public function testGetUserTopArtists(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $spotifyApiMock = $this->createPartialMock(SpotifyApiComponent::class, ['getTop']);
+        $spotifyApiMock->expects($this->once())->method('getTop')->with('artists', 'medium_term', 5)->willReturn([]);
+
+        $controller = new MainController(new ServerRequest());
+
+        $controller->SpotifyApi = $spotifyApiMock;
+
+        $result = $controller->getUserTopArtists();
+
+        $this->assertIsArray($result);
     }
 
     /**
@@ -99,7 +178,15 @@ class MainControllerTest extends TestCase
      */
     public function testAjaxGetTopArtists(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->session(['user' => $this->user]);
+
+        $this->mockCurrentyPlayingGet();
+        $this->mockClientGet('https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=5&offset=0', $this->newClientResponse(200, [], json_encode(['items' => []])));
+
+        $this->get('/main/ajax-get-top-artists/long_term');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('<div id="artists">');
     }
 
     /**
@@ -110,17 +197,12 @@ class MainControllerTest extends TestCase
      */
     public function testAjaxGetCurrentSong(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
+        $this->session(['user' => $this->user]);
 
-    /**
-     * Test test method
-     *
-     * @return void
-     * @uses \App\Controller\MainController::test()
-     */
-    public function testTest(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->mockCurrentyPlayingGet();
+
+        $this->get('/main/ajax-get-current-song');
+
+        $this->assertResponseOk();
     }
 }

@@ -11,6 +11,8 @@ use Cake\I18n\FrozenTime;
  */
 class PlaylistMergerController extends PlaylistController
 {
+
+    
     /**
      * Render playlist merger edit view
      * 

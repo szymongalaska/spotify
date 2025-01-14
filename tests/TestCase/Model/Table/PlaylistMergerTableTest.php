@@ -60,7 +60,33 @@ class PlaylistMergerTableTest extends TestCase
      */
     public function testValidationDefault(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $data = [
+            'user_id' => 1,
+            'source_playlists' => 'testSourcePlaylists',
+            'target_playlist_id' => 'testTargetPlaylistId',
+        ];
+
+        $playlistMerger = $this->PlaylistMerger->newEntity($data);
+        $this->PlaylistMerger->save($playlistMerger);
+
+        $this->assertEmpty($playlistMerger->getErrors());
+        
+
+        $data['source_playlists'] = 'testSourcePlaylists2';
+
+        $playlistMerger = $this->PlaylistMerger->newEntity($data);
+
+        $this->assertNotEmpty($playlistMerger->getErrors());
+    }
+
+    public function testHasOneRelationship(): void
+    {
+        $this->assertTrue($this->PlaylistMerger->hasAssociation('PlaylistMergerCronjobs'));
+    }
+
+    public function testBelongsToRelationship(): void
+    {
+        $this->assertTrue($this->PlaylistMerger->hasAssociation('Users'));
     }
 
     /**
@@ -71,6 +97,26 @@ class PlaylistMergerTableTest extends TestCase
      */
     public function testBuildRules(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $data = [
+            'user_id' => 1,
+            'source_playlists' => 'testSourcePlaylists',
+            'target_playlist_id' => 'testTargetPlaylistId',
+        ];
+
+        $playlistMerger = $this->PlaylistMerger->newEntity($data);
+        $this->PlaylistMerger->save($playlistMerger);
+
+        $playlistMerger = $this->PlaylistMerger->newEntity($data);
+
+        $this->assertFalse($this->PlaylistMerger->save($playlistMerger));
+        $this->assertArrayHasKey('unique', $playlistMerger->getError('target_playlist_id'));
+
+        $data['user_id'] = 9996474669;
+        $data['target_playlist_id'] = 'testTargetPlaylistId2';
+
+        $playlistMerger = $this->PlaylistMerger->newEntity($data);
+        
+        $this->assertFalse($this->PlaylistMerger->save($playlistMerger));
+        $this->assertArrayHasKey('_existsIn', $playlistMerger->getError('user_id'));
     }
 }

@@ -49,10 +49,10 @@ class PlaylistMergerTable extends Table
             'joinType' => 'INNER',
         ]);
 
-        $this->hasOne('PlaylistMergerCronjobs',[
-        'foreign_key' => 'id',
-        'dependent' => true,
-        'cascadeCallbacks' => true,
+        $this->hasOne('PlaylistMergerCronjobs', [
+            'foreign_key' => 'id',
+            'dependent' => true,
+            'cascadeCallbacks' => true,
         ]);
     }
 

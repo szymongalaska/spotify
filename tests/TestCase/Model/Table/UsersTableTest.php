@@ -59,6 +59,38 @@ class UsersTableTest extends TestCase
      */
     public function testValidationDefault(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $data = [
+            'spotify_id' => 'validId',
+            'display_name' => 'validName',
+            'image_url' => 'https://valid.image.url',
+            'access_token' => 'validAccessToken',
+            'refresh_token' => 'validRefreshToken'
+        ];
+
+        $user = $this->Users->newEntity($data);
+        $this->assertEmpty($user->getErrors());
+
+        $data['spotify_id'] = null;
+
+        $user = $this->Users->newEntity($data);
+        $this->assertNotEmpty($user->getErrors());
+    }
+
+    public function testHasManyRelationship(): void
+    {
+        $this->assertTrue($this->Users->hasAssociation('PlaylistMerger'));
+    }
+
+    public function testUpdateUserTokens(): void
+    {
+        $user = $this->Users->get(1);
+
+        $newAccessToken = 'new_access_token';
+        $newRefreshToken = 'new_refresh_token';
+
+        $user = $this->Users->updateUserTokens($user, $newAccessToken, $newRefreshToken);
+
+        $this->assertSame($newAccessToken, $user->access_token);
+        $this->assertSame($newRefreshToken, $user->refresh_token);
     }
 }

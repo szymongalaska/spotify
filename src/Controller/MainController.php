@@ -20,7 +20,7 @@ class MainController extends AppController
         // Approval
         if ($this->request->getQuery('code')) {
             $this->SpotifyApi->setTokensByCode($this->getRequest()->getQuery('code'));
-            $this->_setUser($this->SpotifyApi->getAccessToken(), $this->SpotifyApi->getRefreshToken());
+            $this->setUser($this->SpotifyApi->getAccessToken(), $this->SpotifyApi->getRefreshToken());
 
 
             return $this->redirect(['action' => 'dashboard']);
@@ -44,7 +44,7 @@ class MainController extends AppController
      * 
      * @return \Cake\Http\Response|null
      */
-    protected function _setUser(string $accessToken, string $refreshToken)
+    protected function setUser(string $accessToken, string $refreshToken)
     {
         $profile = $this->SpotifyApi->getProfile();
 
@@ -187,11 +187,5 @@ class MainController extends AppController
         $this->set('track', $currentSong['item']);
         $this->set('playing', true);
         $this->render('/element/song');
-    }
-
-    public function test()
-    {
-        $r = $this->SpotifyApi->createPlaylist('elo', );
-        dd($r);
     }
 }

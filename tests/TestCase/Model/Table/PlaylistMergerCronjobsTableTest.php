@@ -52,6 +52,11 @@ class PlaylistMergerCronjobsTableTest extends TestCase
         parent::tearDown();
     }
 
+    public function testBelongsToRelationship(): void
+    {
+        $this->assertTrue($this->PlaylistMergerCronjobs->hasAssociation('PlaylistMerger'));
+    }
+
     /**
      * Test validationDefault method
      *
@@ -60,7 +65,21 @@ class PlaylistMergerCronjobsTableTest extends TestCase
      */
     public function testValidationDefault(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $data = [
+            'playlist_merger_id' => 1,
+            'frequency' => 'once_daily',
+        ];
+
+        $playlistMergerCronjob = $this->PlaylistMergerCronjobs->newEntity($data);
+
+        $this->assertEmpty($playlistMergerCronjob->getErrors());
+
+        $data['frequency'] = 'invalid_frequency';
+
+        $playlistMergerCronjob = $this->PlaylistMergerCronjobs->newEntity($data);
+
+        $this->assertFalse($this->PlaylistMergerCronjobs->save($playlistMergerCronjob));
+        $this->assertNotEmpty($playlistMergerCronjob);
     }
 
     /**
@@ -71,6 +90,15 @@ class PlaylistMergerCronjobsTableTest extends TestCase
      */
     public function testBuildRules(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $data = [
+            'playlist_merger_id' => 999999,
+            'frequency' => 'once_daily',
+        ];
+
+        $playlistMergerCronjob = $this->PlaylistMergerCronjobs->newEntity($data);
+
+        $this->assertFalse($this->PlaylistMergerCronjobs->save($playlistMergerCronjob));
+        $this->assertArrayHasKey('_existsIn', $playlistMergerCronjob->getError('playlist_merger_id'));
+
     }
 }
