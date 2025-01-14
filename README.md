@@ -1,53 +1,75 @@
-# CakePHP Application Skeleton
+# Spotify Account Management App
 
-![Build Status](https://github.com/cakephp/app/actions/workflows/ci.yml/badge.svg?branch=master)
-[![Total Downloads](https://img.shields.io/packagist/dt/cakephp/app.svg?style=flat-square)](https://packagist.org/packages/cakephp/app)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level%207-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+This is a simple web application built with CakePHP and integrated with the Spotify API. The application allows users to manage their Spotify accounts. Due to Spotify API limitations, only pre-authorized test users can log in to the app.
 
-A skeleton for creating applications with [CakePHP](https://cakephp.org) 5.x.
+## Live Demo
+You can test the application at the following link:
 
-The framework source code can be found here: [cakephp/cakephp](https://github.com/cakephp/cakephp).
+[Live Demo](https://szymongalaska.publicvm.com)
+
+To log in as a test user, click the **"Login as test user"** button. 
+
+### Spotify Test Account Credentials
+If needed, use the following credentials to log in to the Spotify test account:
+
+- **Email**: `uqi54786@msssg.com`
+- **Password**: `h01=;/8E=l[;`
 
 ## Installation
 
-1. Download [Composer](https://getcomposer.org/doc/00-intro.md) or update `composer self-update`.
-2. Run `php composer.phar create-project --prefer-dist cakephp/app [app_name]`.
+To run this application locally, follow the steps below:
 
-If Composer is installed globally, run
+### Prerequisites
+- PHP 8.3 or higher.
+- Composer installed.
+- A database (MySQL, MariaDB, or any supported by CakePHP).
 
-```bash
-composer create-project --prefer-dist cakephp/app
-```
+### Steps
 
-In case you want to use a custom app dir name (e.g. `/myapp/`):
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/szymongalaska/spotify
+   cd spotify
+   ```
 
-```bash
-composer create-project --prefer-dist cakephp/app myapp
-```
+2. **Install Dependencies**
+   ```bash
+   composer install
+   ```
 
-You can now either use your machine's webserver to view the default home page, or start
-up the built-in webserver with:
+3. **Configure the Application**
+   - Copy the `config/.env.default` file to `config/.env`:
+     ```bash
+     cp config/.env.default config/.env
+     ```
+   - Edit the `.env` file and add your database and Spotify API credentials:
+     ```env
 
-```bash
-bin/cake server -p 8765
-```
+     SPOTIFY_CLIENT_ID="your_spotify_client_id"
+     SPOTIFY_CLIENT_SECRET="your_spotify_client_secret"
+     SPOTIFY_REDIRECT_URI="http://your-local-url/callback"
+     ```
 
-Then visit `http://localhost:8765` to see the welcome page.
+4. **Generate API Keys from Spotify**
+   - Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/).
+   - Create a new application.
+   - Add your redirect URI (`http://your-local-url/callback`) to the list of redirect URIs.
+   - Copy the **Client ID** and **Client Secret** into the `.env` file.
 
-## Update
+5. **Run Migrations**
+   ```bash
+   bin/cake migrations migrate
+   ```
 
-Since this skeleton is a starting point for your application and various files
-would have been modified as per your needs, there isn't a way to provide
-automated upgrades, so you have to do any updates manually.
+6. **Start the Application**
+   ```bash
+   bin/cake server
+   ```
+   The application will be available at `http://localhost:8765`.
 
-## Configuration
+## Notes
+- The Spotify API requires users to be pre-authorized. This is why the application includes a "Login as test user" button.
+- You may need to whitelist the callback URL in your Spotify developer application settings.
 
-Read and edit the environment specific `config/app_local.php` and set up the
-`'Datasources'` and any other configuration relevant for your application.
-Other environment agnostic settings can be changed in `config/app.php`.
-
-## Layout
-
-The app skeleton uses [Milligram](https://milligram.io/) (v1.3) minimalist CSS
-framework by default. You can, however, replace it with any other library or
-custom styles.
+## License
+This project is licensed under the MIT License.

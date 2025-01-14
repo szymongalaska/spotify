@@ -15,7 +15,7 @@ return [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
+    'debug' => filter_var(env('DEBUG', false), FILTER_VALIDATE_BOOLEAN),
 
     /*
      * Security and encryption configuration
@@ -44,10 +44,10 @@ return [
              */
             //'port' => 'non_standard_port_number',
 
-            'username' => 'my_app',
-            'password' => 'secret',
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
 
-            'database' => 'my_app',
+            'database' => 'spotify',
             /*
              * If not using the default 'public' schema with the PostgreSQL driver
              * set it here.
@@ -66,9 +66,9 @@ return [
         'test' => [
             'host' => 'localhost',
             //'port' => 'non_standard_port_number',
-            'username' => 'my_app',
-            'password' => 'secret',
-            'database' => 'test_myapp',
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
+            'database' => 'test_spotify',
             //'schema' => 'myapp',
             'url' => env('DATABASE_TEST_URL', 'sqlite://127.0.0.1/tmp/tests.sqlite'),
         ],
