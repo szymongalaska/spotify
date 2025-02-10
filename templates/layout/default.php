@@ -31,6 +31,7 @@
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
+    <meta name="google-site-verification" content="Pnvk-gAuRMhsPQbQnyX5oJgFyTmZCQv5FudPbTTKNgA" />
 </head>
 <body>
     <div class="top-nav-links mobile-menu mobile">

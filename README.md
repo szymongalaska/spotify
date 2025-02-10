@@ -5,7 +5,7 @@ This is a simple web application built with CakePHP and integrated with the Spot
 ## Live Demo
 You can test the application at the following link:
 
-[Live Demo](https://szymongalaska.publicvm.com)
+[Live Demo](http://130.162.219.194:8080/)
 
 To log in as a test user, click the **"Login as test user"** button. 
 
