@@ -186,3 +186,6 @@ msgstr "Zaloguj się jako użytkownik testowy"
 
 msgid "Spotify Manager - check your statistics and manage account"
 msgstr "Spotify Manager - sprawdź swoje statystyki i zarządzaj kontem"
+
+msgid "Note: this is a project not affiliated with official Spotify."
+msgstr "Uwaga: to jest projekt nie związany z oficjalnym Spotify."

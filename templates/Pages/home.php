@@ -11,7 +11,7 @@ $this->disableAutoLayout();
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
-        Spotify TEST APP - <?= __('Login') ?>
+        Account Manager - <?= __('Login') ?>
     </title>
     <?= $this->Html->meta('icon') ?>
 
@@ -25,21 +25,13 @@ $this->disableAutoLayout();
 </head>
 
 <body id="home-page">
-    <header>
-        <div class="container text-center">
-            <img alt="Spotify Logo"
-                src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Full_Logo_RGB_Green.png"
-                width="350" />
-            <h1>
-            </h1>
-        </div>
-    </header>
     <main class="main">
         <div class="container text-center" style="margin-bottom: 2rem;">
             <div class="content">
                 <div class="row">
                     <div class="column">
-                        <p><?= __('Spotify Manager - check your statistics and manage account')?></p>
+                        <p><?= __('Account Manager - check your statistics and manage account')?></p>
+                        <p><small><?= __('Note: this is a project not affiliated with official Spotify.') ?></small></p>
                     </div>
                 </div>
             </div>
@@ -54,7 +46,7 @@ $this->disableAutoLayout();
                 </div>
                 <div class="row">
                     <div class="column" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                        <?= $this->Html->link(__('Login'), ['controller' => 'main', 'action' => 'login'], ['class' => 'button']) ?>
+                        <?php /* $this->Html->link(__('Login'), ['controller' => 'main', 'action' => 'login'], ['class' => 'button'])  */ ?>
                         <?= $this->Html->link(__('Login as test user'), ['controller' => 'main', 'action' => 'loginAsGuest'], ['class' => 'button', 'style' => 'font-size: 0.8rem']) ?>
                     </div>
                 </div>
