@@ -7,7 +7,7 @@
 <div class="dropdown">
     <?= $this->Html->link('<span class="material-symbols-outlined">library_music</span>' . __('Library'), '#', ['escape' => false]) ?>
     <div class="dropdown-menu">
-        <?= $this->Html->link('<span class="material-symbols-outlined">compare_arrows</span>' . __('New and unavailable'), ['controller' => 'Main', 'action' => 'NewlyUnavailableAndUnavailableTracks'], ['escape' => false]); ?>
+        <?= $this->Html->link('<span class="material-symbols-outlined">compare_arrows</span>' . __('New and unavailable'), ['controller' => 'Main', 'action' => 'newlyAvailableAndUnavailableTracks'], ['escape' => false]); ?>
     </div>
 </div>
 <div class="dropdown">
