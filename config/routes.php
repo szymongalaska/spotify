@@ -66,7 +66,7 @@ return function (RouteBuilder $routes): void {
 
         $builder->connect('/dashboard', 'Main::dashboard');
 
-        $builder->connect('/new-and-unavailable', ['controller' => 'Main', 'action' => 'NewlyUnavailableAndUnavailableTracks']);
+        $builder->connect('/new-and-unavailable', ['controller' => 'Main', 'action' => 'NewlyAvailableAndUnavailableTracks']);
 
         /*
          * Connect catchall routes for all controllers.

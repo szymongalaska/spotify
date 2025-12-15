@@ -37,7 +37,7 @@ class MainControllerTest extends TestCase
         $this->user = $usersTable->find('all')->first();
     }
 
-    protected function mockCurrentyPlayingGet()
+    protected function mockCurrentlyPlayingGet()
     {
         $this->mockClientGet('https://api.spotify.com/v1/me/player/currently-playing', $this->newClientResponse(200, []));
     }
@@ -67,7 +67,7 @@ class MainControllerTest extends TestCase
 
         $this->mockClientPost('https://accounts.spotify.com/api/token', $this->newClientResponse(200, [], json_encode(['access_token' => 'test', 'refresh_token' => 'test'])));
         $this->mockClientGet('https://api.spotify.com/v1/me', $this->newClientResponse(200, [], json_encode(['id' => '1'])));
- 
+
         $this->get('/login');
         $this->assertRedirect('/dashboard');
     }
@@ -85,14 +85,14 @@ class MainControllerTest extends TestCase
     {
         $this->get('/login');
         $this->assertRedirectContains('https://accounts.spotify.com/authorize');
-    }   
+    }
 
     public function testDashboard()
     {
         $this->session(['user' => $this->user]);
 
-        $this->mockCurrentyPlayingGet();
-        $this->mockClientGet('https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=5&offset=0', $this->newClientResponse(200, [],file_get_contents(TESTS . 'Fixture' . DS . 'SpotifyApi' . DS . 'top-artists-and-tracks' . '.json')));
+        $this->mockCurrentlyPlayingGet();
+        $this->mockClientGet('https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=5&offset=0', $this->newClientResponse(200, [], file_get_contents(TESTS . 'Fixture' . DS . 'SpotifyApi' . DS . 'top-artists-and-tracks' . '.json')));
         $this->mockClientGet('https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=5&offset=0', $this->newClientResponse(200, [], json_encode(['data'])));
 
         $this->get('/dashboard');
@@ -105,7 +105,7 @@ class MainControllerTest extends TestCase
     {
         $this->session(['user' => $this->user]);
 
-        $this->mockCurrentyPlayingGet();
+        $this->mockCurrentlyPlayingGet();
         $this->mockClientGet('https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=5&offset=0', $this->newClientResponse(200, [], json_encode(['items' => []])));
 
         $this->get('/main/ajax-get-top-tracks/long_term');
@@ -180,7 +180,7 @@ class MainControllerTest extends TestCase
     {
         $this->session(['user' => $this->user]);
 
-        $this->mockCurrentyPlayingGet();
+        $this->mockCurrentlyPlayingGet();
         $this->mockClientGet('https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=5&offset=0', $this->newClientResponse(200, [], json_encode(['items' => []])));
 
         $this->get('/main/ajax-get-top-artists/long_term');
@@ -199,10 +199,22 @@ class MainControllerTest extends TestCase
     {
         $this->session(['user' => $this->user]);
 
-        $this->mockCurrentyPlayingGet();
+        $this->mockCurrentlyPlayingGet();
 
         $this->get('/main/ajax-get-current-song');
 
         $this->assertResponseOk();
+    }
+
+    public function testNewlyUnavailableAndUnavailableTracks(): void
+    {
+        $this->session(['user' => $this->user]);
+
+        $this->mockCurrentlyPlayingGet();
+
+        $this->get('/new-and-unavailable');
+
+        $this->assertResponseOk();
+        $this->assertResponseContains('<div id="new-and-available">');
     }
 }

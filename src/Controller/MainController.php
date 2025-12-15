@@ -202,7 +202,7 @@ class MainController extends AppController
      * Get unavailable tracks from users library, store it to cache and then return
      * @return array
      */
-    protected function GetUnvailableTracksFromLibrary()
+    protected function getUnvailableTracksFromLibrary()
     {
         $trackService = new TrackService();
 
@@ -219,17 +219,18 @@ class MainController extends AppController
      * Compare previously cached unavailable tracks with freshly fetched and store the difference in a cache
      * @return void
      */
-    protected function FilterNewlyAvailableAndUnavailableTracks()
+    protected function filterNewlyAvailableAndUnavailableTracks()
     {
         $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'UnvailableTracks']);
-        $unavailableTracks = json_decode(Cache::read($cacheKey));
+        $unavailableTracks = Cache::read($cacheKey);
 
-        $newUnavailableTracks = $this->GetUnvailableTracksFromLibrary();
+        $newUnavailableTracks = $this->getUnvailableTracksFromLibrary();
 
         if (!$unavailableTracks) {
             $availableTracks = [];
             $unavailableTracks = $newUnavailableTracks;
         } else {
+            $unavailableTracks = json_decode($unavailableTracks);
             $availableTracks = array_diff($unavailableTracks, $newUnavailableTracks);
             $unavailableTracks = array_diff($newUnavailableTracks, $unavailableTracks);
         }
@@ -257,13 +258,10 @@ class MainController extends AppController
 
         /** @var \App\Model\Entity\User $user */
         foreach ($users as $user) {
-            if (!$user->playlist_merger)
-                continue;
-
             $this->SpotifyApi->setTokens(['access_token' => $user->access_token, 'refresh_token' => $user->refresh_token]);
             $this->getRequest()->getSession()->write('user', $user);
 
-            $this->FilterNewlyAvailableAndUnavailableTracks();
+            $this->filterNewlyAvailableAndUnavailableTracks();
         }
 
         $this->getRequest()->getSession()->delete('user');
@@ -275,9 +273,9 @@ class MainController extends AppController
      * Render newly available and unavilable tracks from users library
      * @return void
      */
-    public function NewlyUnavailableAndUnavailableTracks()
+    public function newlyAvailableAndUnavailableTracks()
     {
         $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'AvailableAndUnavailableTracksFromLibrary']);
-        $this->set('tracks', json_decode(Cache::read($cacheKey)));
+        $this->set('tracks', json_decode(Cache::read($cacheKey) ?? ''));
     }
 }

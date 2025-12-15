@@ -198,12 +198,12 @@ class PlaylistMergerController extends PlaylistController
 
         // Filter both arrays so they only contain IDs to add/delete
         $tracksToAdd = array_filter($sourceTracks, function ($track) use ($targetPlaylistTracksIds) {
-            return !in_array($track['track']['id'], $targetPlaylistTracksIds);
+            return !\in_array($track['track']['id'], $targetPlaylistTracksIds);
         });
 
         $tracksToRemove = array_filter($targetPlaylistTracks, function ($track) use ($sourceTracksIds) {
             if ($track['track']['id'] !== null)
-                return !in_array($track['track']['id'], $sourceTracksIds);
+                return !\in_array($track['track']['id'], $sourceTracksIds);
         });
 
         // Remove/add tracks that are not in Saved Tracks
@@ -212,12 +212,12 @@ class PlaylistMergerController extends PlaylistController
             $savedTracksIds = array_column(array_column($savedTracks, 'track'), 'id');
 
             $tracksToAdd = array_filter($tracksToAdd, function ($track) use ($savedTracksIds) {
-                return in_array($track['track']['id'], $savedTracksIds);
+                return \in_array($track['track']['id'], $savedTracksIds);
             });
 
             $tracksToRemove = array_merge($tracksToRemove, array_filter($targetPlaylistTracks, function ($track) use ($savedTracksIds) {
                 if ($track['track']['id'] !== null)
-                    return !in_array($track['track']['id'], $savedTracksIds);
+                    return !\in_array($track['track']['id'], $savedTracksIds);
             }));
         }
 

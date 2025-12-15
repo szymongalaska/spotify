@@ -3,7 +3,7 @@
  * @var \App\View\AppView $this
  */
 ?>
-<div class="new-and-available">
+<div id="new-and-available">
 
     <?php if (!empty($tracks)): ?>
         <div class="content list available-tracks">
