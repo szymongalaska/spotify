@@ -13,7 +13,7 @@
             </p>
         </div>
         <?php if(!empty($topTracks['items'])): ?>
-            <?php echo $this->element('tracks', ['topTracks' => $topTracks]); ?>
+            <?php echo $this->element('tracks', ['tracks' => $topTracks['items']]); ?>
         <?php else: ?>
             <p class="message"><?= __('Your top tracks list is empty - listen to some music!') ?></p>
         <?php endif; ?>

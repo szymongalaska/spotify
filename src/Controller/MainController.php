@@ -225,12 +225,14 @@ class MainController extends AppController
         $unavailableTracks = Cache::read($cacheKey);
 
         $newUnavailableTracks = $this->getUnvailableTracksFromLibrary();
+        
+        $newUnavailableTracks = array_map(function($track){return $track['track'];}, $newUnavailableTracks);
 
         if (!$unavailableTracks) {
             $availableTracks = [];
             $unavailableTracks = $newUnavailableTracks;
         } else {
-            $unavailableTracks = json_decode($unavailableTracks);
+            $unavailableTracks = json_decode($unavailableTracks, true);
             $availableTracks = array_diff($unavailableTracks, $newUnavailableTracks);
             $unavailableTracks = array_diff($newUnavailableTracks, $unavailableTracks);
         }
@@ -276,6 +278,9 @@ class MainController extends AppController
     public function newlyAvailableAndUnavailableTracks()
     {
         $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'AvailableAndUnavailableTracksFromLibrary']);
-        $this->set('tracks', json_decode(Cache::read($cacheKey) ?? ''));
+        $this->set('tracks', json_decode(Cache::read($cacheKey) ?? '', true));
+        $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'UnvailableTracks']);
+        $unavailableTracks = array_map(fn($track) => $track['track'], json_decode(Cache::read($cacheKey) ?? '', true));
+        $this->set(compact('unavailableTracks'));
     }
 }

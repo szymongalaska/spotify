@@ -5,7 +5,7 @@
 ?>
 <div id="tracks">
     <ul>
-        <?php foreach ($topTracks['items'] as $track): ?>
+        <?php foreach ($tracks as $track): ?>
             <li><?php echo $this->element('song', ['track' => $track]); ?></li>
         <?php endforeach; ?>
     </ul>
