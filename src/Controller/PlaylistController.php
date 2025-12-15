@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use Cake\Cache\Cache;
 use Cake\Http\Exception\BadRequestException;
+use App\Service\TrackService;
 
 class PlaylistController extends MainController
 {
@@ -48,41 +49,9 @@ class PlaylistController extends MainController
         $this->SpotifyApi->setMarket(true);
         $playlist = $this->SpotifyApi->getPlaylist($playlistId);
         $tracks =  $this->SpotifyApi->getPlaylistTracks($playlistId);
-        $playlist['tracks'] = $this->filterAvailableTracks($tracks);
+        $playlist['tracks'] = (new TrackService())->filterAvailableTracks($tracks);
 
         $this->set(compact('playlist'));
-    }
-
-    /**
-     * Remove not available tracks from array of tracks
-     * @param array $tracks Array of tracks
-     * @return array Filtered array
-     */
-    protected function filterNotAvailableTracks(array $tracks)
-    {
-        return array_filter($tracks, function($track){
-
-            if($track['track']['is_local'] === true)
-                return true;
-
-            return $track['track']['is_playable'];
-        });
-    }
-
-    /**
-     * Remove available tracks from array of tracks
-     * @param array $tracks Array of tracks
-     * @return array Filtered array
-     */
-    protected function filterAvailableTracks(array $tracks)
-    {
-        return array_filter($tracks, function($track){
-
-            if($track['track']['is_local'] === true)
-                return false;
-
-            return !$track['track']['is_playable'];
-        });
     }
 
     /**

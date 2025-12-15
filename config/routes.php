@@ -62,9 +62,11 @@ return function (RouteBuilder $routes): void {
          */
         $builder->connect('/pages/*', 'Pages::display');
 
-        $builder->connect('/login', ['controller' => 'Main' , 'action' => 'login']);
+        $builder->connect('/login', ['controller' => 'Main', 'action' => 'login']);
 
         $builder->connect('/dashboard', 'Main::dashboard');
+
+        $builder->connect('/new-and-unavailable', ['controller' => 'Main', 'action' => 'NewlyUnavailableAndUnavailableTracks']);
 
         /*
          * Connect catchall routes for all controllers.

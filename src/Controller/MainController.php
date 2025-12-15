@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 use Cake\I18n\FrozenTime;
+use App\Service\TrackService;
+use Cake\Cache\Cache;
 
 class MainController extends AppController
 {
@@ -194,5 +196,88 @@ class MainController extends AppController
         $this->set('track', $currentSong['item']);
         $this->set('playing', true);
         $this->render('/element/song');
+    }
+
+    /**
+     * Get unavailable tracks from users library, store it to cache and then return
+     * @return array
+     */
+    protected function GetUnvailableTracksFromLibrary()
+    {
+        $trackService = new TrackService();
+
+        $allTracks = $this->getUserSavedTracks();
+        $unavailableTracks = $trackService->filterAvailableTracks($allTracks);
+
+        $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'UnvailableTracks']);
+        Cache::write($cacheKey, json_encode($unavailableTracks), '_spotify_');
+
+        return $unavailableTracks;
+    }
+
+    /**
+     * Compare previously cached unavailable tracks with freshly fetched and store the difference in a cache
+     * @return void
+     */
+    protected function FilterNewlyAvailableAndUnavailableTracks()
+    {
+        $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'UnvailableTracks']);
+        $unavailableTracks = json_decode(Cache::read($cacheKey));
+
+        $newUnavailableTracks = $this->GetUnvailableTracksFromLibrary();
+
+        if (!$unavailableTracks) {
+            $availableTracks = [];
+            $unavailableTracks = $newUnavailableTracks;
+        } else {
+            $availableTracks = array_diff($unavailableTracks, $newUnavailableTracks);
+            $unavailableTracks = array_diff($newUnavailableTracks, $unavailableTracks);
+        }
+
+        $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'AvailableAndUnavailableTracksFromLibrary']);
+        Cache::write($cacheKey, json_encode([
+            'availableTracks' => $availableTracks,
+            'unavailableTracks' => $unavailableTracks,
+        ]), '_spotify_');
+    }
+
+    /**
+     * Cronjob that runs `FilterNewlyAvailableAndUnavailableTracks`
+     * @see MainController::FilterNewlyAvailableAndUnavailableTracks
+     * @return \Cake\Http\Response
+     */
+    public function cronAvailableAndUnavailableTracks()
+    {
+        $this->autoRender = false;
+
+        if ($this->getRequest()->getQuery('token') !== 'qM7MO43sqOfYRFcDKlBwXuMRxFcTv0RTeURD1iFm0p5Lb7k3f0Fbx2jB8hAMGTX0')
+            return $this->getResponse()->withStatus(401);
+
+        $users = $this->fetchTable('Users')->find('all');
+
+        /** @var \App\Model\Entity\User $user */
+        foreach ($users as $user) {
+            if (!$user->playlist_merger)
+                continue;
+
+            $this->SpotifyApi->setTokens(['access_token' => $user->access_token, 'refresh_token' => $user->refresh_token]);
+            $this->getRequest()->getSession()->write('user', $user);
+
+            $this->FilterNewlyAvailableAndUnavailableTracks();
+        }
+
+        $this->getRequest()->getSession()->delete('user');
+
+        return $this->response->withStatus(200);
+    }
+
+    /**
+     * Render newly available and unavilable tracks from users library
+     * @return void
+     */
+    public function NewlyUnavailableAndUnavailableTracks()
+    {
+        $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'AvailableAndUnavailableTracksFromLibrary']);
+        $this->set('tracks', json_decode(Cache::read($cacheKey)));
     }
 }
