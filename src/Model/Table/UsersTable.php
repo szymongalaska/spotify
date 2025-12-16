@@ -48,6 +48,10 @@ class UsersTable extends Table
         $this->hasMany('PlaylistMerger')    
             ->setForeignKey('user_id')
             ->setBindingKey('id');
+
+        $this->hasOne('PushNotifications')
+            ->setForeignKey('user_id')
+            ->setBindingKey('id');
     }
 
     /**

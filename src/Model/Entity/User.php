@@ -18,6 +18,7 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\DateTime $modified
  * 
  * @property \App\Model\Entity\PlaylistMerger[] $playlist_merger
+ * @property \App\Model\Entity\PushNotification $push_notification
  */
 class User extends Entity
 {
