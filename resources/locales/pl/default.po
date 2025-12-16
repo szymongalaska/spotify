@@ -196,11 +196,14 @@ msgstr "Biblioteka"
 msgid "New and unavailable"
 msgstr "Nowe i niedostępne"
 
-msgid "Available tracks"
-msgstr "Dostępne utwory"
+msgid "New tracks"
+msgstr "Nowe utwory"
 
 msgid "Unavailable tracks"
 msgstr "Niedostępne utwory"
+
+msgid "Changes"
+msgstr "Zmiany"
 
 msgid "No data available for comparison. Please try again in about 24 hours."
 msgstr "Brak danych do porównania. Spróbuj ponownie za około 24 godziny."
