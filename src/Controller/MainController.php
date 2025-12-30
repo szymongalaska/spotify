@@ -111,7 +111,7 @@ class MainController extends AppController
      */
     public function ajaxGetTopTracks($term)
     {
-        $this->set('tracks', $this->getUserTopTracks($term));
+        $this->set('tracks', $this->getUserTopTracks($term)['items']);
         $this->render('/element/tracks', 'ajax');
     }
 
@@ -297,7 +297,7 @@ class MainController extends AppController
         $unavailableTracks = array_map(fn($track) => $track['track'], json_decode(Cache::read($cacheKey) ?? '', true));
         $this->set(compact('unavailableTracks'));
 
-        $push = $this->fetchTable('PushNotifications')->findByUserId($this->getRequest()->getSession()->read('user')->id ?? 1)->first()->library_new_and_available_changes ?? false;
-        $this->set(compact('push'));
+        // $push = $this->fetchTable('PushNotifications')->findByUserId($this->getRequest()->getSession()->read('user')->id ?? 1)->first()->library_new_and_available_changes ?? false;
+        // $this->set(compact('push'));
     }
 }
