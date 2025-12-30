@@ -53,6 +53,21 @@
         <?php echo $this->element('tracks', ['tracks' => $unavailableTracks]); ?>
     </div>
 </div>
+<script>
+    $(function(){
+        setTimeout(function(){
+            $.post({
+                headers: {
+                    'X-CSRF-Token': '<?= $this->getRequest()->getAttribute('csrfToken') ?>',
+                },
+                url: 'main/ajax-save-unavailable-tracks-to-cache',
+                success: function (response) {
+
+                },
+            });
+        }, 5000);
+    });
+</script>
 <!-- <script>
     $('#push').on('change', function(){
         $.post({

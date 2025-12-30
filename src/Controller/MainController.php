@@ -199,7 +199,7 @@ class MainController extends AppController
     }
 
     /**
-     * Get unavailable tracks from users library, store it to cache and then return
+     * Get unavailable tracks from users library and return them
      * @return array
      */
     protected function getUnvailableTracksFromLibrary()
@@ -209,10 +209,22 @@ class MainController extends AppController
         $allTracks = $this->getUserSavedTracks();
         $unavailableTracks = $trackService->filterAvailableTracks($allTracks);
 
+        return $unavailableTracks;
+    }
+
+    /**
+     * Get unavailable tracks from users library and store it to cache
+     * @return void
+     */
+    public function ajaxSaveUnavailableTracksToCache()
+    {
+        $this->viewBuilder()->setLayout('ajax');
+        $this->autoRender = false;
+        
+        $unavailableTracks = $this->getUnvailableTracksFromLibrary();
+
         $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'UnvailableTracks']);
         Cache::write($cacheKey, json_encode($unavailableTracks), '_spotify_');
-
-        return $unavailableTracks;
     }
 
     /**
@@ -225,8 +237,9 @@ class MainController extends AppController
         $unavailableTracks = Cache::read($cacheKey);
 
         $newUnavailableTracks = $this->getUnvailableTracksFromLibrary();
-        
-        $newUnavailableTracks = array_map(function($track){return $track['track'];}, $newUnavailableTracks);
+
+        $newUnavailableTracks = array_map(function ($track) {
+            return $track['track']; }, $newUnavailableTracks);
 
         if (!$unavailableTracks) {
             $availableTracks = [];
@@ -279,8 +292,12 @@ class MainController extends AppController
     {
         $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'AvailableAndUnavailableTracksFromLibrary']);
         $this->set('tracks', json_decode(Cache::read($cacheKey) ?? '', true));
+
         $cacheKey = $this->makeCacheKey([$this->getRequest()->getSession()->read('user')['id'], 'UnvailableTracks']);
         $unavailableTracks = array_map(fn($track) => $track['track'], json_decode(Cache::read($cacheKey) ?? '', true));
         $this->set(compact('unavailableTracks'));
+
+        $push = $this->fetchTable('PushNotifications')->findByUserId($this->getRequest()->getSession()->read('user')->id ?? 1)->first()->library_new_and_available_changes ?? false;
+        $this->set(compact('push'));
     }
 }

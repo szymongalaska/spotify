@@ -411,7 +411,8 @@ main {
     margin-top: 5%;
 }
 
-img.top-nav-profile-picture, span.top-nav-profile-picture {
+img.top-nav-profile-picture,
+span.top-nav-profile-picture {
     width: 64px;
     height: 64px;
     border: 1px solid #c1c1c1;
@@ -419,8 +420,7 @@ img.top-nav-profile-picture, span.top-nav-profile-picture {
     padding: 0.5rem;
 }
 
-span.top-nav-profile-picture
-{
+span.top-nav-profile-picture {
     text-align: center;
 }
 
@@ -829,8 +829,7 @@ div.input.select:has(select#playlist-merger-cronjob-frequency) {
         font-size: 1rem;
     }
 
-    div.playlistMerger div.row.playlist
-    {
+    div.playlistMerger div.row.playlist {
         gap: 1rem;
     }
 
@@ -848,23 +847,20 @@ div.input.select:has(select#playlist-merger-cronjob-frequency) {
     span.track-name {
         font-size: 2rem;
     }
-    
+
     span.artist-name {
         font-size: 1.2rem;
     }
 }
 
-@media screen and (min-width: 768px)
-{
+@media screen and (min-width: 768px) {
     div.playlistMerger div.content.list.playlists {
         width: 45%;
     }
 }
 
-@media screen and (max-width: 767px)
-{
-    div.playlistMerger div.playlists-container
-    {
+@media screen and (max-width: 767px) {
+    div.playlistMerger div.playlists-container {
         flex-direction: column;
     }
 }
@@ -874,14 +870,61 @@ div.mobile-menu {
     display: none;
 }
 
-span.track-name
-{
+span.track-name {
     font-weight: 600;
 }
 
-div.border-box
-{
+div.border-box {
     padding: 2rem;
     border: 1px solid var(--color-green-light);
     border-radius: var(--border-radius);
+}
+
+.switch {
+    display: inline-block;
+    height: 17px;
+    position: relative;
+    width: 30px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+}
+
+.slider:before {
+    background-color: #fff;
+    bottom: 2px;
+    content: "";
+    height: 13px;
+    left: 2px;
+    position: absolute;
+    transition: .4s;
+    width: 13px;
+}
+
+input:checked+.slider {
+    background-color: var(--color-green);
+}
+
+input:checked+.slider:before {
+    transform: translateX(13px);
+}
+
+.slider.round {
+    border-radius: 17px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }
